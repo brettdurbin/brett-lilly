@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Brett & Lilly 💛</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Caveat+Brush&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -26,10 +27,7 @@
       z-index: 9999;
       transition: opacity 0.8s ease;
     }
-    #gate.fade-out {
-      opacity: 0;
-      pointer-events: none;
-    }
+    #gate.fade-out { opacity: 0; pointer-events: none; }
     .gate-title {
       font-size: 3rem;
       letter-spacing: 0.15em;
@@ -49,10 +47,7 @@
       margin-bottom: 1.5rem;
       animation: pulse 2s ease-in-out infinite;
     }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
-    }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
     #pw-input {
       background: transparent;
       border: none;
@@ -68,13 +63,7 @@
       caret-color: #e8c97a;
     }
     #pw-input::placeholder { color: #6e5a4a; }
-    #pw-error {
-      color: #c4665a;
-      font-size: 0.85rem;
-      margin-top: 0.8rem;
-      letter-spacing: 0.1em;
-      height: 1.2em;
-    }
+    #pw-error { color: #c4665a; font-size: 0.85rem; margin-top: 0.8rem; letter-spacing: 0.1em; height: 1.2em; }
     #pw-btn {
       margin-top: 1.8rem;
       background: none;
@@ -93,47 +82,18 @@
     #main { display: none; }
     #main.visible { display: block; }
 
-    /* Hero */
     .hero {
       text-align: center;
       padding: 80px 20px 60px;
       background: linear-gradient(180deg, #1a0e1e 0%, #0d0a0e 100%);
     }
-    .hero-names {
-      font-size: clamp(2.5rem, 8vw, 5rem);
-      letter-spacing: 0.1em;
-      color: #f5e6d3;
-      line-height: 1.1;
-    }
-    .hero-ampersand {
-      color: #e8c97a;
-      font-style: italic;
-    }
-    .hero-date {
-      font-size: 1rem;
-      letter-spacing: 0.4em;
-      color: #c4a882;
-      margin-top: 1.2rem;
-      text-transform: uppercase;
-    }
-    .hero-divider {
-      width: 60px;
-      height: 1px;
-      background: #c4a882;
-      margin: 1.5rem auto;
-    }
-    .counter {
-      font-size: 0.9rem;
-      letter-spacing: 0.3em;
-      color: #9a8070;
-    }
-    .counter span {
-      color: #e8c97a;
-      font-size: 1.3rem;
-      font-style: italic;
-    }
+    .hero-names { font-size: clamp(2.5rem, 8vw, 5rem); letter-spacing: 0.1em; color: #f5e6d3; line-height: 1.1; }
+    .hero-ampersand { color: #e8c97a; font-style: italic; }
+    .hero-date { font-size: 1rem; letter-spacing: 0.4em; color: #c4a882; margin-top: 1.2rem; text-transform: uppercase; }
+    .hero-divider { width: 60px; height: 1px; background: #c4a882; margin: 1.5rem auto; }
+    .counter { font-size: 0.9rem; letter-spacing: 0.3em; color: #9a8070; }
+    .counter span { color: #e8c97a; font-size: 1.3rem; font-style: italic; }
 
-    /* Section headings */
     .section-heading {
       text-align: center;
       font-size: 1.2rem;
@@ -142,14 +102,7 @@
       text-transform: uppercase;
       padding: 50px 20px 30px;
     }
-    .section-heading::after {
-      content: '';
-      display: block;
-      width: 40px;
-      height: 1px;
-      background: #c4a882;
-      margin: 12px auto 0;
-    }
+    .section-heading::after { content:''; display:block; width:40px; height:1px; background:#c4a882; margin:12px auto 0; }
 
     /* Photo Grid */
     .gallery {
@@ -175,10 +128,42 @@
       transition: transform 0.4s ease, filter 0.4s ease;
       filter: brightness(0.9) saturate(0.95);
     }
-    .gallery-item:hover img {
-      transform: scale(1.03);
-      filter: brightness(1) saturate(1.1);
+    .gallery-item:hover img { transform: scale(1.03); filter: brightness(1) saturate(1.1); }
+
+    /* ── NOTE CARDS ── */
+    .note-card {
+      break-inside: avoid;
+      margin-bottom: 8px;
+      padding: 18px 20px 22px;
+      font-family: 'Caveat', cursive;
+      font-size: 1.25rem;
+      line-height: 1.6;
+      position: relative;
+      border-radius: 2px;
+      box-shadow: 2px 4px 12px rgba(0,0,0,0.5);
     }
+    .note-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(transparent, transparent 27px, rgba(180,140,100,0.18) 27px, rgba(180,140,100,0.18) 28px);
+      pointer-events: none;
+    }
+    .note-card.cream  { background: #f5efdf; color: #2a1a0e; transform: rotate(-1.5deg); }
+    .note-card.yellow { background: #fff8c5; color: #2a1a0e; transform: rotate(1deg); }
+    .note-card.pink   { background: #fde8e8; color: #2a1a0e; transform: rotate(-0.8deg); }
+    .note-card.white  { background: #fafafa; color: #1a1a1a; transform: rotate(1.5deg); }
+    .note-card.torn   { background: #f0e8d5; color: #2a1a0e; transform: rotate(-2deg);
+      clip-path: polygon(0 0,100% 2%,99% 98%,1% 100%); }
+    .note-card .note-sig {
+      display: block;
+      margin-top: 10px;
+      font-family: 'Caveat Brush', cursive;
+      font-size: 1.1rem;
+      color: inherit;
+      opacity: 0.7;
+    }
+    .note-card .note-heart { color: #c0404a; }
 
     /* Lightbox */
     #lightbox {
@@ -192,44 +177,13 @@
       padding: 20px;
     }
     #lightbox.active { display: flex; }
-    #lightbox img {
-      max-width: 90vw;
-      max-height: 90vh;
-      object-fit: contain;
-      border: 1px solid #2a2020;
-    }
-    #lightbox-close {
-      position: absolute;
-      top: 20px; right: 30px;
-      font-size: 2rem;
-      color: #c4a882;
-      cursor: pointer;
-      background: none;
-      border: none;
-      line-height: 1;
-    }
-    #lb-prev, #lb-next {
-      position: absolute;
-      top: 50%; transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: #c4a882;
-      font-size: 2.5rem;
-      cursor: pointer;
-      padding: 10px 20px;
-    }
-    #lb-prev { left: 10px; }
-    #lb-next { right: 10px; }
+    #lightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; border: 1px solid #2a2020; }
+    #lightbox-close { position:absolute; top:20px; right:30px; font-size:2rem; color:#c4a882; cursor:pointer; background:none; border:none; line-height:1; }
+    #lb-prev, #lb-next { position:absolute; top:50%; transform:translateY(-50%); background:none; border:none; color:#c4a882; font-size:2.5rem; cursor:pointer; padding:10px 20px; }
+    #lb-prev { left:10px; } #lb-next { right:10px; }
 
-    /* Footer */
-    .footer {
-      text-align: center;
-      padding: 60px 20px 80px;
-      color: #4a3a30;
-      font-size: 0.8rem;
-      letter-spacing: 0.2em;
-    }
-    .footer-heart { color: #c4665a; font-size: 1.2rem; }
+    .footer { text-align:center; padding:60px 20px 80px; color:#4a3a30; font-size:0.8rem; letter-spacing:0.2em; }
+    .footer-heart { color:#c4665a; font-size:1.2rem; }
   </style>
 </head>
 <body>
@@ -259,31 +213,196 @@
   <div class="section-heading">Our Story</div>
 
   <div class="gallery" id="gallery">
+
     <div class="gallery-item"><img src="photos/01.jpg" loading="lazy"/></div>
+
+    <div class="note-card yellow">
+      Brett,<br>I've been thinking about you all day and I can't concentrate on anything else. Come home soon.<br>
+      <span class="note-sig">— L <span class="note-heart">♥</span></span>
+    </div>
+
     <div class="gallery-item"><img src="photos/02.jpg" loading="lazy"/></div>
+
+    <div class="note-card cream">
+      Last night was insane. I'm still not over it. You know exactly what you do to me and I love it.<br>
+      <span class="note-sig">— Lilly</span>
+    </div>
+
     <div class="gallery-item"><img src="photos/03.jpg" loading="lazy"/></div>
+
+    <div class="note-card pink">
+      I want you right now. That's it. That's the note.<br>
+      <span class="note-sig">— L <span class="note-heart">❤️</span></span>
+    </div>
+
     <div class="gallery-item"><img src="photos/04.jpg" loading="lazy"/></div>
+
+    <div class="note-card white">
+      Brett — you make me feel things I don't have words for. I'm obsessed with you in the best way possible.<br>
+      <span class="note-sig">— Lilly</span>
+    </div>
+
     <div class="gallery-item"><img src="photos/05.jpg" loading="lazy"/></div>
+
+    <div class="note-card torn">
+      I don't care what we do tonight as long as it ends the way I'm thinking. Don't keep me waiting.<br>
+      <span class="note-sig">— L</span>
+    </div>
+
     <div class="gallery-item"><img src="photos/06.jpg" loading="lazy"/></div>
+
+    <div class="note-card cream">
+      Every single time. Every. Single. Time. I don't know how you do it but please never stop.<br>
+      <span class="note-sig">— Lilly <span class="note-heart">♥</span></span>
+    </div>
+
     <div class="gallery-item"><img src="photos/07.png" loading="lazy"/></div>
+
+    <div class="note-card yellow">
+      Come to bed. I'm waiting. Don't make me ask twice.<br>
+      <span class="note-sig">— L 😈</span>
+    </div>
+
     <div class="gallery-item"><img src="photos/08.jpg" loading="lazy"/></div>
+
+    <div class="note-card pink">
+      I keep replaying last weekend in my head. You're dangerous and I'm here for all of it.<br>
+      <span class="note-sig">— Lilly</span>
+    </div>
+
     <div class="gallery-item"><img src="photos/09.png" loading="lazy"/></div>
+
+    <div class="note-card white">
+      Nobody else gets to have you. Mine. All mine.<br>
+      <span class="note-sig">— L <span class="note-heart">♥</span></span>
+    </div>
+
     <div class="gallery-item"><img src="photos/10.jpg" loading="lazy"/></div>
+
+    <div class="note-card torn">
+      I woke up thinking about you. Then I fell back asleep thinking about you. This is your fault.<br>
+      <span class="note-sig">— Lilly</span>
+    </div>
+
     <div class="gallery-item"><img src="photos/11.jpg" loading="lazy"/></div>
+
+    <div class="note-card cream">
+      The way you look at me sometimes... you know what it does to me. Don't pretend you don't.<br>
+      <span class="note-sig">— L <span class="note-heart">❤️</span></span>
+    </div>
+
     <div class="gallery-item"><img src="photos/12.png" loading="lazy"/></div>
+
+    <div class="note-card yellow">
+      Tonight I have plans for you. Very specific plans. You're going to like them.<br>
+      <span class="note-sig">— Lilly 😏</span>
+    </div>
+
     <div class="gallery-item"><img src="photos/13.jpg" loading="lazy"/></div>
+
+    <div class="note-card pink">
+      I'm yours completely. Do with that what you want.<br>
+      <span class="note-sig">— L <span class="note-heart">♥</span></span>
+    </div>
+
     <div class="gallery-item"><img src="photos/14.jpg" loading="lazy"/></div>
+
+    <div class="note-card white">
+      Brett. You ruin me. In the best way. I don't want to recover.<br>
+      <span class="note-sig">— Lilly</span>
+    </div>
+
     <div class="gallery-item"><img src="photos/15.jpg" loading="lazy"/></div>
+
+    <div class="note-card torn">
+      I can't keep my hands off you and I'm not even sorry about it.<br>
+      <span class="note-sig">— L <span class="note-heart">❤️</span></span>
+    </div>
+
     <div class="gallery-item"><img src="photos/16.jpg" loading="lazy"/></div>
+
+    <div class="note-card cream">
+      Every time I think I've figured you out you do something that makes me fall all over again. Unfair.<br>
+      <span class="note-sig">— Lilly</span>
+    </div>
+
     <div class="gallery-item"><img src="photos/17.jpg" loading="lazy"/></div>
-  </div>
 
-  <div class="section-heading" style="margin-top:60px">Notes from You 💌</div>
+    <div class="note-card yellow">
+      You + me + absolutely nobody else around tonight. That's all I want. That's everything I want.<br>
+      <span class="note-sig">— L 🖤</span>
+    </div>
 
-  <div class="gallery" style="max-width:700px;margin:0 auto 20px;">
-    <div class="gallery-item"><img src="photos/note1.png" loading="lazy"/></div>
-    <div class="gallery-item"><img src="photos/note2.png" loading="lazy"/></div>
-    <div class="gallery-item"><img src="photos/note3.png" loading="lazy"/></div>
+    <div class="note-card pink">
+      I still get butterflies. After all this time. It's embarrassing honestly. I love you.<br>
+      <span class="note-sig">— Lilly <span class="note-heart">♥</span></span>
+    </div>
+
+    <div class="note-card white">
+      You're the only person I want in my space, in my bed, in my life. Just you. Forever.<br>
+      <span class="note-sig">— L</span>
+    </div>
+
+    <div class="note-card torn">
+      Okay I know we have things to do today but I really really don't want you to get up.<br>
+      <span class="note-sig">— Lilly 😅</span>
+    </div>
+
+    <div class="note-card cream">
+      I think about the first time we... never mind. I'm smiling. You know why.<br>
+      <span class="note-sig">— L <span class="note-heart">♥</span></span>
+    </div>
+
+    <div class="note-card yellow">
+      Being in love with you is my favorite thing I've ever done. Second favorite is everything else we do.<br>
+      <span class="note-sig">— Lilly 😘</span>
+    </div>
+
+    <div class="note-card pink">
+      If you read this before coming home, hurry up.<br>
+      <span class="note-sig">— L <span class="note-heart">❤️</span></span>
+    </div>
+
+    <div class="note-card white">
+      You hold me like I'm something worth holding onto. I never want to stop feeling that.<br>
+      <span class="note-sig">— Lilly</span>
+    </div>
+
+    <div class="note-card torn">
+      I wrote you like four other versions of this note and deleted them all. This is the tame one. Ask me later.<br>
+      <span class="note-sig">— L 🙈</span>
+    </div>
+
+    <div class="note-card cream">
+      I love you so much it makes me want to do things I can't write down. So I'll just show you instead.<br>
+      <span class="note-sig">— Lilly <span class="note-heart">♥</span></span>
+    </div>
+
+    <div class="note-card yellow">
+      You have absolutely no idea what you look like when you sleep. I do. It's my favorite view.<br>
+      <span class="note-sig">— L</span>
+    </div>
+
+    <div class="note-card pink">
+      The chemistry we have should be illegal. Just saying. I'm not complaining. Not even a little.<br>
+      <span class="note-sig">— Lilly 🔥</span>
+    </div>
+
+    <div class="note-card white">
+      Brett Durbin, you are genuinely the sexiest most annoying person I've ever met and I'd choose you every single time.<br>
+      <span class="note-sig">— L <span class="note-heart">♥</span></span>
+    </div>
+
+    <div class="note-card torn">
+      I'm yours. You know that. Now act like it tonight.<br>
+      <span class="note-sig">— Lilly 😈</span>
+    </div>
+
+    <div class="note-card cream">
+      Loving you is the easiest and the hardest thing all at once. I wouldn't trade it for anything.<br>
+      <span class="note-sig">— L <span class="note-heart">❤️</span></span>
+    </div>
+
   </div>
 
   <div class="footer">
@@ -302,7 +421,6 @@
 </div>
 
 <script>
-  // Password gate
   const CORRECT = 'lilly25';
   const input = document.getElementById('pw-input');
   const btn = document.getElementById('pw-btn');
@@ -325,13 +443,11 @@
   btn.addEventListener('click', unlock);
   input.addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
 
-  // Days counter
   const start = new Date('2013-07-10');
   const today = new Date();
   const days = Math.floor((today - start) / (1000 * 60 * 60 * 24));
   document.getElementById('days-count').textContent = days.toLocaleString();
 
-  // Lightbox
   const imgs = Array.from(document.querySelectorAll('.gallery-item img'));
   const lb = document.getElementById('lightbox');
   const lbImg = document.getElementById('lb-img');
