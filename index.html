@@ -130,6 +130,123 @@
     }
     .gallery-item:hover img { transform: scale(1.03); filter: brightness(1) saturate(1.1); }
 
+    /* ── POLAROID FRAMES ── */
+    .gallery-item.polaroid {
+      background: #fafaf5;
+      padding: 10px 10px 40px 10px;
+      box-shadow: 2px 4px 15px rgba(0,0,0,0.4);
+    }
+    .gallery-item.polaroid.tilt-left { transform: rotate(-2.5deg); }
+    .gallery-item.polaroid.tilt-right { transform: rotate(2deg); }
+    .gallery-item.polaroid.tilt-slight { transform: rotate(-1deg); }
+    .gallery-item.polaroid .polaroid-caption {
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: #4a3a30;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* ── TAPE STRIPS ── */
+    .gallery-item.taped { position: relative; }
+    .gallery-item.taped::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-3deg);
+      width: 70px;
+      height: 22px;
+      background: rgba(255, 248, 220, 0.55);
+      border: 1px solid rgba(200, 180, 140, 0.3);
+      z-index: 2;
+      backdrop-filter: blur(1px);
+    }
+    .gallery-item.taped-corner::before {
+      content: '';
+      position: absolute;
+      top: -4px;
+      right: 10px;
+      transform: rotate(25deg);
+      width: 55px;
+      height: 20px;
+      background: rgba(255, 230, 200, 0.5);
+      border: 1px solid rgba(200, 170, 130, 0.25);
+      z-index: 2;
+    }
+    .gallery-item.taped-corner::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 12px;
+      transform: rotate(-15deg);
+      width: 55px;
+      height: 20px;
+      background: rgba(255, 230, 200, 0.5);
+      border: 1px solid rgba(200, 170, 130, 0.25);
+      z-index: 2;
+    }
+
+    /* ── PUSH PINS ── */
+    .note-card.pinned { position: relative; }
+    .note-card.pinned::after {
+      content: '📌';
+      position: absolute;
+      top: -8px;
+      right: 12px;
+      font-size: 1.2rem;
+      transform: rotate(15deg);
+      filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3));
+    }
+    .note-card.pinned-left::after {
+      content: '📌';
+      position: absolute;
+      top: -8px;
+      left: 14px;
+      right: auto;
+      font-size: 1.2rem;
+      transform: rotate(-20deg);
+      filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3));
+    }
+
+    /* ── WASHI TAPE ── */
+    .note-card.washi { position: relative; }
+    .note-card.washi::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 20%;
+      width: 80px;
+      height: 18px;
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(232, 201, 122, 0.5),
+        rgba(232, 201, 122, 0.5) 4px,
+        rgba(196, 168, 130, 0.4) 4px,
+        rgba(196, 168, 130, 0.4) 8px
+      );
+      transform: rotate(-2deg);
+      z-index: 2;
+    }
+    .note-card.washi-pink::before {
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(253, 180, 180, 0.5),
+        rgba(253, 180, 180, 0.5) 4px,
+        rgba(240, 150, 160, 0.4) 4px,
+        rgba(240, 150, 160, 0.4) 8px
+      );
+    }
+    .note-card.washi-blue::before {
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(180, 210, 240, 0.5),
+        rgba(180, 210, 240, 0.5) 4px,
+        rgba(150, 190, 230, 0.4) 4px,
+        rgba(150, 190, 230, 0.4) 8px
+      );
+    }
+
     /* ── NOTE CARDS ── */
     .note-card {
       break-inside: avoid;
@@ -214,197 +331,197 @@
 
   <div class="gallery" id="gallery">
 
-    <div class="gallery-item"><img src="photos/01.jpg" loading="lazy"/></div>
+    <div class="gallery-item polaroid tilt-left"><img src="photos/01.jpg" loading="lazy"/><div class="polaroid-caption">us 💛</div></div>
 
-    <div class="note-card yellow">
+    <div class="note-card yellow pinned">
       Brett,<br>I've been thinking about you all day and I can't concentrate on anything else. Come home soon.<br>
       <span class="note-sig">— L <span class="note-heart">♥</span></span>
     </div>
 
-    <div class="gallery-item"><img src="photos/02.jpg" loading="lazy"/></div>
+    <div class="gallery-item taped"><img src="photos/02.jpg" loading="lazy"/></div>
 
-    <div class="gallery-item"><img src="photos/03.jpg" loading="lazy"/></div>
+    <div class="gallery-item polaroid tilt-right"><img src="photos/03.jpg" loading="lazy"/></div>
 
-    <div class="note-card cream">
+    <div class="note-card cream washi">
       Last night was insane. I'm still not over it. You know exactly what you do to me and I love it.<br>
       <span class="note-sig">— Lilly</span>
     </div>
 
-    <div class="note-card pink">
+    <div class="note-card pink pinned-left">
       I want you right now. That's it. That's the note.<br>
       <span class="note-sig">— L <span class="note-heart">❤️</span></span>
     </div>
 
-    <div class="gallery-item"><img src="photos/04.jpg" loading="lazy"/></div>
+    <div class="gallery-item taped-corner"><img src="photos/04.jpg" loading="lazy"/></div>
 
-    <div class="gallery-item"><img src="photos/note1.png" loading="lazy"/></div>
+    <div class="gallery-item polaroid tilt-slight"><img src="photos/note1.png" loading="lazy"/></div>
 
-    <div class="note-card white">
+    <div class="note-card white washi washi-blue">
       Brett — you make me feel things I don't have words for. I'm obsessed with you in the best way possible.<br>
       <span class="note-sig">— Lilly</span>
     </div>
 
-    <div class="gallery-item"><img src="photos/05.jpg" loading="lazy"/></div>
+    <div class="gallery-item taped"><img src="photos/05.jpg" loading="lazy"/></div>
 
-    <div class="note-card torn">
+    <div class="note-card torn pinned">
       I don't care what we do tonight as long as it ends the way I'm thinking. Don't keep me waiting.<br>
       <span class="note-sig">— L</span>
     </div>
 
-    <div class="gallery-item"><img src="photos/06.jpg" loading="lazy"/></div>
+    <div class="gallery-item polaroid tilt-right"><img src="photos/06.jpg" loading="lazy"/></div>
 
-    <div class="note-card cream">
+    <div class="note-card cream pinned-left">
       Every single time. Every. Single. Time. I don't know how you do it but please never stop.<br>
       <span class="note-sig">— Lilly <span class="note-heart">♥</span></span>
     </div>
 
-    <div class="note-card yellow">
+    <div class="note-card yellow washi washi-pink">
       I still get butterflies. After all this time. It's embarrassing honestly. I love you.<br>
       <span class="note-sig">— Lilly <span class="note-heart">♥</span></span>
     </div>
 
-    <div class="gallery-item"><img src="photos/07.png" loading="lazy"/></div>
+    <div class="gallery-item taped-corner"><img src="photos/07.png" loading="lazy"/></div>
 
-    <div class="gallery-item"><img src="photos/08.jpg" loading="lazy"/></div>
+    <div class="gallery-item polaroid tilt-left"><img src="photos/08.jpg" loading="lazy"/></div>
 
-    <div class="note-card pink">
+    <div class="note-card pink pinned">
       Come to bed. I'm waiting. Don't make me ask twice.<br>
       <span class="note-sig">— L 😈</span>
     </div>
 
-    <div class="gallery-item"><img src="photos/note2.png" loading="lazy"/></div>
+    <div class="gallery-item taped"><img src="photos/note2.png" loading="lazy"/></div>
 
-    <div class="note-card white">
+    <div class="note-card white washi">
       I keep replaying last weekend in my head. You're dangerous and I'm here for all of it.<br>
       <span class="note-sig">— Lilly</span>
     </div>
 
-    <div class="gallery-item"><img src="photos/09.png" loading="lazy"/></div>
+    <div class="gallery-item polaroid tilt-slight"><img src="photos/09.png" loading="lazy"/></div>
 
-    <div class="note-card torn">
+    <div class="note-card torn washi washi-blue">
       Nobody else gets to have you. Mine. All mine.<br>
       <span class="note-sig">— L <span class="note-heart">♥</span></span>
     </div>
 
-    <div class="note-card cream">
+    <div class="note-card cream pinned">
       You're the only person I want in my space, in my bed, in my life. Just you. Forever.<br>
       <span class="note-sig">— L</span>
     </div>
 
-    <div class="gallery-item"><img src="photos/10.jpg" loading="lazy"/></div>
+    <div class="gallery-item taped-corner"><img src="photos/10.jpg" loading="lazy"/></div>
 
-    <div class="note-card yellow">
+    <div class="note-card yellow pinned-left">
       I woke up thinking about you. Then I fell back asleep thinking about you. This is your fault.<br>
       <span class="note-sig">— Lilly</span>
     </div>
 
-    <div class="gallery-item"><img src="photos/11.jpg" loading="lazy"/></div>
+    <div class="gallery-item polaroid tilt-right"><img src="photos/11.jpg" loading="lazy"/><div class="polaroid-caption">forever ♥</div></div>
 
-    <div class="gallery-item"><img src="photos/12.png" loading="lazy"/></div>
+    <div class="gallery-item taped"><img src="photos/12.png" loading="lazy"/></div>
 
-    <div class="note-card pink">
+    <div class="note-card pink washi washi-pink">
       The way you look at me sometimes... you know what it does to me. Don't pretend you don't.<br>
       <span class="note-sig">— L <span class="note-heart">❤️</span></span>
     </div>
 
-    <div class="note-card white">
+    <div class="note-card white pinned">
       Tonight I have plans for you. Very specific plans. You're going to like them.<br>
       <span class="note-sig">— Lilly 😏</span>
     </div>
 
-    <div class="gallery-item"><img src="photos/13.jpg" loading="lazy"/></div>
+    <div class="gallery-item polaroid tilt-left"><img src="photos/13.jpg" loading="lazy"/></div>
 
-    <div class="note-card torn">
+    <div class="note-card torn pinned-left">
       I'm yours completely. Do with that what you want.<br>
       <span class="note-sig">— L <span class="note-heart">♥</span></span>
     </div>
 
-    <div class="gallery-item"><img src="photos/note3.png" loading="lazy"/></div>
+    <div class="gallery-item taped-corner"><img src="photos/note3.png" loading="lazy"/></div>
 
-    <div class="gallery-item"><img src="photos/14.jpg" loading="lazy"/></div>
+    <div class="gallery-item polaroid tilt-slight"><img src="photos/14.jpg" loading="lazy"/><div class="polaroid-caption">my favorite</div></div>
 
-    <div class="note-card cream">
+    <div class="note-card cream washi">
       Brett. You ruin me. In the best way. I don't want to recover.<br>
       <span class="note-sig">— Lilly</span>
     </div>
 
-    <div class="note-card yellow">
+    <div class="note-card yellow pinned">
       Okay I know we have things to do today but I really really don't want you to get up.<br>
       <span class="note-sig">— Lilly 😅</span>
     </div>
 
-    <div class="gallery-item"><img src="photos/15.jpg" loading="lazy"/></div>
+    <div class="gallery-item taped"><img src="photos/15.jpg" loading="lazy"/></div>
 
-    <div class="note-card pink">
+    <div class="note-card pink washi washi-blue">
       I can't keep my hands off you and I'm not even sorry about it.<br>
       <span class="note-sig">— L <span class="note-heart">❤️</span></span>
     </div>
 
-    <div class="gallery-item"><img src="photos/16.jpg" loading="lazy"/></div>
+    <div class="gallery-item polaroid tilt-right"><img src="photos/16.jpg" loading="lazy"/></div>
 
-    <div class="note-card white">
+    <div class="note-card white pinned-left">
       Every time I think I've figured you out you do something that makes me fall all over again. Unfair.<br>
       <span class="note-sig">— Lilly</span>
     </div>
 
-    <div class="note-card torn">
+    <div class="note-card torn washi washi-pink">
       I think about the first time we... never mind. I'm smiling. You know why.<br>
       <span class="note-sig">— L <span class="note-heart">♥</span></span>
     </div>
 
-    <div class="gallery-item"><img src="photos/17.jpg" loading="lazy"/></div>
+    <div class="gallery-item taped-corner"><img src="photos/17.jpg" loading="lazy"/></div>
 
-    <div class="note-card cream">
+    <div class="note-card cream pinned">
       You + me + absolutely nobody else around tonight. That's all I want. That's everything I want.<br>
       <span class="note-sig">— L 🖤</span>
     </div>
 
-    <div class="note-card yellow">
+    <div class="note-card yellow washi">
       Being in love with you is my favorite thing I've ever done. Second favorite is everything else we do.<br>
       <span class="note-sig">— Lilly 😘</span>
     </div>
 
-    <div class="note-card pink">
+    <div class="note-card pink pinned-left">
       If you read this before coming home, hurry up.<br>
       <span class="note-sig">— L <span class="note-heart">❤️</span></span>
     </div>
 
-    <div class="note-card white">
+    <div class="note-card white washi washi-blue">
       You hold me like I'm something worth holding onto. I never want to stop feeling that.<br>
       <span class="note-sig">— Lilly</span>
     </div>
 
-    <div class="note-card torn">
+    <div class="note-card torn pinned">
       I wrote you like four other versions of this note and deleted them all. This is the tame one. Ask me later.<br>
       <span class="note-sig">— L 🙈</span>
     </div>
 
-    <div class="note-card cream">
+    <div class="note-card cream washi washi-pink">
       I love you so much it makes me want to do things I can't write down. So I'll just show you instead.<br>
       <span class="note-sig">— Lilly <span class="note-heart">♥</span></span>
     </div>
 
-    <div class="note-card yellow">
+    <div class="note-card yellow pinned-left">
       You have absolutely no idea what you look like when you sleep. I do. It's my favorite view.<br>
       <span class="note-sig">— L</span>
     </div>
 
-    <div class="note-card pink">
+    <div class="note-card pink washi">
       The chemistry we have should be illegal. Just saying. I'm not complaining. Not even a little.<br>
       <span class="note-sig">— Lilly 🔥</span>
     </div>
 
-    <div class="note-card white">
+    <div class="note-card white pinned">
       Brett Durbin, you are genuinely the sexiest most annoying person I've ever met and I'd choose you every single time.<br>
       <span class="note-sig">— L <span class="note-heart">♥</span></span>
     </div>
 
-    <div class="note-card torn">
+    <div class="note-card torn washi washi-blue">
       I'm yours. You know that. Now act like it tonight.<br>
       <span class="note-sig">— Lilly 😈</span>
     </div>
 
-    <div class="note-card cream">
+    <div class="note-card cream pinned-left">
       Loving you is the easiest and the hardest thing all at once. I wouldn't trade it for anything.<br>
       <span class="note-sig">— L <span class="note-heart">❤️</span></span>
     </div>
