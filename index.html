@@ -242,83 +242,73 @@
     }
     .node.taped::after { display: none; }
 
-    /* Coupon / Gift Card nodes */
+    /* Gift Card nodes — realistic store cards */
     .node.coupon {
-      width: 260px;
-      background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 50%, #ffe699 100%);
+      width: 280px;
+      height: 170px;
       padding: 0;
-      box-shadow: 4px 6px 22px rgba(0,0,0,0.5), inset 0 0 0 2px rgba(180,140,60,0.3);
-      border-radius: 6px;
+      border-radius: 12px;
       overflow: hidden;
+      box-shadow: 4px 6px 24px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.1);
     }
     .node.coupon::after {
       content: '📌';
       position: absolute;
       top: -12px;
-      right: 16px;
+      right: 18px;
       left: auto;
       transform: rotate(-10deg);
       font-size: 1.3rem;
     }
-    .coupon-border {
-      border: 2px dashed #c4a040;
-      margin: 6px;
-      padding: 14px 16px;
-      border-radius: 4px;
-      text-align: center;
+    .gc-inner {
+      width: 100%;
+      height: 100%;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
     }
-    .coupon-title {
+    .gc-logo {
       font-family: 'Georgia', serif;
       font-size: 1.1rem;
       font-weight: bold;
-      color: #6b4c00;
+      letter-spacing: 0.2em;
+    }
+    .gc-type {
+      font-family: Arial, sans-serif;
+      font-size: 0.65rem;
       letter-spacing: 0.15em;
-      margin-bottom: 2px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-top: 2px;
     }
-    .coupon-subtitle {
-      font-family: 'Caveat', cursive;
-      font-size: 0.85rem;
-      color: #8a6d20;
-      margin-bottom: 8px;
+    .gc-value {
+      font-family: Arial, sans-serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      position: absolute;
+      right: 22px;
+      top: 18px;
     }
-    .coupon-value {
-      font-family: 'Georgia', serif;
-      font-size: 1.6rem;
-      font-weight: bold;
-      color: #4a3500;
-      margin: 6px 0;
-      text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+    .gc-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
     }
-    .coupon-desc {
-      font-family: 'Caveat', cursive;
-      font-size: 1rem;
-      color: #3a2a00;
-      line-height: 1.4;
-      margin: 8px 0;
-    }
-    .coupon-divider {
+    .gc-code {
+      font-family: 'Courier New', monospace;
       font-size: 0.7rem;
-      color: #c4a040;
-      letter-spacing: 0.05em;
-      margin: 8px 0 6px;
+      letter-spacing: 0.12em;
+      opacity: 0.8;
     }
-    .coupon-fine {
-      font-family: 'Georgia', serif;
-      font-size: 0.6rem;
-      color: #7a6030;
-      line-height: 1.4;
-      font-style: italic;
-      margin-bottom: 6px;
-    }
-    .coupon-code {
-      font-family: monospace;
-      font-size: 0.75rem;
-      color: #4a3500;
-      background: rgba(0,0,0,0.06);
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 3px;
-      letter-spacing: 0.15em;
+    .gc-fine {
+      font-family: Arial, sans-serif;
+      font-size: 0.5rem;
+      opacity: 0.5;
+      max-width: 160px;
+      text-align: right;
+      line-height: 1.3;
     }
 
     /* Lightbox */
@@ -449,31 +439,40 @@ const notes = [
   { text: "Okay I know we have things to do today but I really really don't want you to get up.", color: 'yellow', sig: '— Lilly 😅' },
 ];
 
-// Fake coupon / gift card
+// Fake coupons to real stores
 const coupons = [
   {
-    title: '🎁 GIFT CERTIFICATE',
-    subtitle: 'Redeemable by Lilly ONLY',
-    value: 'ONE (1) FREE',
-    desc: 'Full Day of Brett Doing Whatever You Say\nNo Questions Asked · No Complaints · No Phone',
-    fine: 'Valid any day Lilly chooses. Non-transferable. Brett cannot dispute. Expires: NEVER.',
-    code: 'LILLY-IS-BOSS-2025'
+    brand: 'SEPHORA',
+    brandColor: '#000',
+    bgColor: '#fff',
+    accentColor: '#000',
+    value: '$150',
+    desc: 'E-Gift Card',
+    fine: 'Present this code in-store or online at sephora.com. One-time use. No cash value.',
+    code: 'SEPH-7742-LILLY-XO',
+    logo: '✦ SEPHORA ✦'
   },
   {
-    title: '💆‍♀️ SPA COUPON',
-    subtitle: 'Issued by: Brett Durbin Wellness Corp™',
-    value: 'UNLIMITED',
-    desc: 'Back Rubs, Foot Rubs & Head Scratches\nOn Demand · Any Time · No Excuses',
-    fine: 'Coupon activated by simply saying "babe." Brett must comply within 30 seconds or penalty doubles.',
-    code: 'RUB-4-LILLY-VIP'
+    brand: 'TARGET',
+    brandColor: '#cc0000',
+    bgColor: '#fff',
+    accentColor: '#cc0000',
+    value: '$200',
+    desc: 'Gift Card',
+    fine: 'Redeemable at any Target store or target.com. Cannot be used for previous purchases.',
+    code: 'TGT-9918-BL-2025',
+    logo: '◎ TARGET'
   },
   {
-    title: '🍕 GOLDEN TICKET',
-    subtitle: 'Brett\'s Kitchen™ — VIP Pass',
-    value: '$500 VALUE',
-    desc: 'Dinner of Your Choice\nCooked by Brett · Served in Bed · Dessert Included 😏',
-    fine: 'If food is mid, Brett must order DoorDash AND still do dishes. No appeals.',
-    code: 'CHEF-BRETT-FRAUD'
+    brand: 'STARBUCKS',
+    brandColor: '#00704A',
+    bgColor: '#f1f0eb',
+    accentColor: '#00704A',
+    value: '$75',
+    desc: 'Rewards Gift Card',
+    fine: 'Load to your Starbucks app or present barcode in-store. Stars not included.',
+    code: 'SBUX-4455-LILLY',
+    logo: '☕ STARBUCKS'
   }
 ];
 
@@ -559,14 +558,16 @@ function initBoard() {
     el.className = 'node coupon';
     el.style.transform = `rotate(${rot}deg)`;
     el.innerHTML = `
-      <div class="coupon-border">
-        <div class="coupon-title">${coupon.title}</div>
-        <div class="coupon-subtitle">${coupon.subtitle}</div>
-        <div class="coupon-value">${coupon.value}</div>
-        <div class="coupon-desc">${coupon.desc.replace(/\n/g, '<br>')}</div>
-        <div class="coupon-divider">✂ · · · · · · · · · · · · · · · · · · · · ✂</div>
-        <div class="coupon-fine">${coupon.fine}</div>
-        <div class="coupon-code">${coupon.code}</div>
+      <div class="gc-inner" style="background:${coupon.bgColor}; color:${coupon.brandColor};">
+        <div>
+          <div class="gc-logo" style="color:${coupon.accentColor}">${coupon.logo}</div>
+          <div class="gc-type" style="color:${coupon.brandColor}">${coupon.desc}</div>
+        </div>
+        <div class="gc-value" style="color:${coupon.accentColor}">${coupon.value}</div>
+        <div class="gc-bottom">
+          <div class="gc-code" style="color:${coupon.brandColor}">${coupon.code}</div>
+          <div class="gc-fine" style="color:${coupon.brandColor}">${coupon.fine}</div>
+        </div>
       </div>
     `;
     el.style.left = (x - 120) + 'px';
