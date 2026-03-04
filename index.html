@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=3000, initial-scale=0.4, minimum-scale=0.2, maximum-scale=2"/>
   <title>Brett & Lilly 💛</title>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Caveat+Brush&display=swap" rel="stylesheet">
   <style>
@@ -12,12 +12,24 @@
       font-family: 'Georgia', serif;
       background: #1a1410;
       color: #f5e6d3;
-      overflow: hidden;
-      height: 100vh;
-      width: 100vw;
-      cursor: grab;
+      width: 3600px;
+      height: 3600px;
+      overflow: auto;
+      position: relative;
     }
-    body.dragging-node { cursor: grabbing; }
+
+    /* Cork board texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(60,40,25,0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(60,40,25,0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(40,25,15,0.2) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
     /* ── PASSWORD GATE ── */
     #gate {
@@ -82,159 +94,153 @@
     }
     #pw-btn:hover { background: #c4a882; color: #0d0a0e; }
 
-    /* ── CANVAS AREA ── */
-    #web-container {
+    /* ── BOARD ── */
+    #board {
       display: none;
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-    }
-    #web-container.visible { display: block; }
-
-    #web-canvas {
       position: absolute;
       top: 0; left: 0;
-      width: 100%;
-      height: 100%;
+      width: 3600px;
+      height: 3600px;
     }
+    #board.visible { display: block; }
 
-    /* ── HEADER OVERLAY ── */
-    .web-header {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      text-align: center;
-      padding: 18px 20px 14px;
-      background: linear-gradient(180deg, rgba(13,10,14,0.9) 0%, transparent 100%);
-      z-index: 100;
-      pointer-events: none;
-    }
-    .web-header h1 {
-      font-size: 1.8rem;
-      letter-spacing: 0.12em;
-      color: #f5e6d3;
-      font-weight: normal;
-    }
-    .web-header h1 span { color: #e8c97a; font-style: italic; }
-    .web-header .sub {
-      font-size: 0.75rem;
-      letter-spacing: 0.35em;
-      color: #c4a882;
-      margin-top: 4px;
-    }
-
-    /* ── NODES ── */
-    .web-node {
+    /* SVG strings layer */
+    #strings {
       position: absolute;
-      cursor: grab;
-      transition: box-shadow 0.3s ease, transform 0.15s ease;
-      z-index: 10;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-    .web-node:hover { z-index: 50; transform: scale(1.05); }
-    .web-node.active { cursor: grabbing; z-index: 100; transform: scale(1.08); }
-
-    /* Photo nodes */
-    .web-node.photo {
-      width: 140px;
-      background: #fafaf5;
-      padding: 8px 8px 32px 8px;
-      box-shadow: 3px 5px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(200,180,140,0.1);
-    }
-    .web-node.photo img {
-      width: 100%;
-      height: 120px;
-      object-fit: cover;
-      display: block;
-      filter: brightness(0.95) saturate(0.9) sepia(0.08);
-    }
-    .web-node.photo .photo-label {
-      font-family: 'Caveat', cursive;
-      font-size: 0.85rem;
-      color: #4a3a30;
-      text-align: center;
-      margin-top: 6px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Note nodes */
-    .web-node.note {
-      width: 170px;
-      padding: 14px 16px 16px;
-      font-family: 'Caveat', cursive;
-      font-size: 1rem;
-      line-height: 1.5;
-      box-shadow: 3px 5px 18px rgba(0,0,0,0.45);
-    }
-    .web-node.note::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(transparent, transparent 24px, rgba(180,140,100,0.15) 24px, rgba(180,140,100,0.15) 25px);
-      pointer-events: none;
-      border-radius: inherit;
-    }
-    .web-node.note.cream  { background: #f5efdf; color: #2a1a0e; }
-    .web-node.note.yellow { background: #fff8c5; color: #2a1a0e; }
-    .web-node.note.pink   { background: #fde8e8; color: #2a1a0e; }
-    .web-node.note.white  { background: #fafafa; color: #1a1a1a; }
-    .web-node.note.torn   { background: #f0e8d5; color: #2a1a0e; clip-path: polygon(0 0,100% 2%,99% 98%,1% 100%); }
-    .web-node.note .sig {
-      display: block;
-      margin-top: 8px;
-      font-family: 'Caveat Brush', cursive;
-      font-size: 0.9rem;
-      opacity: 0.65;
-    }
-
-    /* Pin on top of node */
-    .web-node::after {
-      content: '📌';
-      position: absolute;
-      top: -10px;
-      left: 50%;
-      transform: translateX(-50%) rotate(15deg);
-      font-size: 1.1rem;
-      filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.4));
+      top: 0; left: 0;
+      width: 3600px;
+      height: 3600px;
+      z-index: 1;
       pointer-events: none;
     }
 
-    /* Center hub */
-    .web-node.hub {
-      width: 160px;
-      height: 160px;
+    /* ── CENTER HUB ── */
+    .hub {
+      position: absolute;
+      width: 200px;
+      height: 200px;
       border-radius: 50%;
       background: radial-gradient(circle at 40% 40%, #2a1e2e, #0d0a0e);
-      border: 2px solid #e8c97a;
+      border: 3px solid #e8c97a;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      box-shadow: 0 0 40px rgba(232,201,122,0.15), 3px 5px 20px rgba(0,0,0,0.6);
+      box-shadow: 0 0 60px rgba(232,201,122,0.2), 4px 6px 25px rgba(0,0,0,0.6);
+      z-index: 5;
+      cursor: grab;
     }
-    .web-node.hub::after { display: none; }
-    .web-node.hub .hub-names {
-      font-size: 1.3rem;
-      letter-spacing: 0.08em;
+    .hub .hub-names {
+      font-size: 1.6rem;
+      letter-spacing: 0.1em;
       color: #f5e6d3;
     }
-    .web-node.hub .hub-names span { color: #e8c97a; font-style: italic; }
-    .web-node.hub .hub-date {
-      font-size: 0.6rem;
+    .hub .hub-names span { color: #e8c97a; font-style: italic; }
+    .hub .hub-date {
+      font-size: 0.7rem;
       letter-spacing: 0.3em;
       color: #c4a882;
-      margin-top: 4px;
-    }
-    .web-node.hub .hub-counter {
-      font-size: 0.7rem;
-      color: #9a8070;
       margin-top: 6px;
+    }
+    .hub .hub-counter {
+      font-size: 0.8rem;
+      color: #9a8070;
+      margin-top: 8px;
       letter-spacing: 0.15em;
     }
-    .web-node.hub .hub-counter em { color: #e8c97a; font-style: normal; font-size: 0.9rem; }
+    .hub .hub-counter em { color: #e8c97a; font-style: normal; font-size: 1.1rem; }
+
+    /* ── NODES ── */
+    .node {
+      position: absolute;
+      z-index: 10;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: box-shadow 0.2s ease;
+    }
+    .node:hover { z-index: 50; }
+    .node.dragging { z-index: 100; cursor: grabbing; }
+
+    /* Photo nodes */
+    .node.photo {
+      width: 180px;
+      background: #fafaf5;
+      padding: 10px 10px 38px 10px;
+      box-shadow: 3px 5px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(200,180,140,0.1);
+    }
+    .node.photo img {
+      width: 100%;
+      height: 155px;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.95) saturate(0.9) sepia(0.08);
+      cursor: pointer;
+    }
+    .node.photo .photo-label {
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: #4a3a30;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* Note nodes */
+    .node.note {
+      width: 200px;
+      padding: 18px 20px 22px;
+      font-family: 'Caveat', cursive;
+      font-size: 1.2rem;
+      line-height: 1.5;
+      box-shadow: 3px 5px 18px rgba(0,0,0,0.45);
+    }
+    .node.note::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(transparent, transparent 26px, rgba(180,140,100,0.15) 26px, rgba(180,140,100,0.15) 27px);
+      pointer-events: none;
+    }
+    .node.note.cream  { background: #f5efdf; color: #2a1a0e; }
+    .node.note.yellow { background: #fff8c5; color: #2a1a0e; }
+    .node.note.pink   { background: #fde8e8; color: #2a1a0e; }
+    .node.note.white  { background: #fafafa; color: #1a1a1a; }
+    .node.note.torn   { background: #f0e8d5; color: #2a1a0e; clip-path: polygon(0 0,100% 2%,99% 98%,1% 100%); }
+    .node.note .sig {
+      display: block;
+      margin-top: 8px;
+      font-family: 'Caveat Brush', cursive;
+      font-size: 1rem;
+      opacity: 0.6;
+    }
+
+    /* Pin on top */
+    .node::after {
+      content: '📌';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%) rotate(15deg);
+      font-size: 1.3rem;
+      filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.4));
+      pointer-events: none;
+    }
+
+    /* Tape strips on some photos */
+    .node.taped::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-3deg);
+      width: 80px;
+      height: 24px;
+      background: rgba(255, 248, 220, 0.5);
+      border: 1px solid rgba(200, 180, 140, 0.25);
+      z-index: 2;
+    }
+    .node.taped::after { display: none; }
 
     /* Lightbox */
     #lightbox {
@@ -250,34 +256,6 @@
     #lightbox.active { display: flex; }
     #lightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; border: 1px solid #2a2020; }
     #lightbox-close { position:absolute; top:20px; right:30px; font-size:2rem; color:#c4a882; cursor:pointer; background:none; border:none; line-height:1; z-index: 9000; }
-
-    /* Instructions */
-    .instructions {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      color: #5a4a3a;
-      z-index: 100;
-      pointer-events: none;
-      text-align: center;
-      opacity: 0.7;
-    }
-
-    /* Cork texture overlay */
-    #web-container::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(ellipse at 20% 30%, rgba(60,40,25,0.3) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 70%, rgba(60,40,25,0.2) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(40,25,15,0.15) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 1;
-    }
   </style>
 </head>
 <body>
@@ -292,16 +270,9 @@
   <button id="pw-btn">ENTER</button>
 </div>
 
-<!-- WEB CONTAINER -->
-<div id="web-container">
-  <svg id="web-canvas"></svg>
-
-  <div class="web-header">
-    <h1>Brett <span>&amp;</span> Lilly</h1>
-    <div class="sub">SINCE JULY 10, 2013 · <span id="days-count">—</span> DAYS</div>
-  </div>
-
-  <div class="instructions">drag to move · click photos to enlarge · scroll to zoom</div>
+<!-- BOARD -->
+<div id="board">
+  <svg id="strings"></svg>
 </div>
 
 <!-- LIGHTBOX -->
@@ -311,37 +282,36 @@
 </div>
 
 <script>
-// ── PASSWORD GATE ──
+// ── PASSWORD ──
 const CORRECT = 'lilly25';
 const pwInput = document.getElementById('pw-input');
-const pwBtn = document.getElementById('pw-btn');
-const pwError = document.getElementById('pw-error');
 const gate = document.getElementById('gate');
-const webContainer = document.getElementById('web-container');
+const board = document.getElementById('board');
 
 function unlock() {
   if (pwInput.value.trim().toLowerCase() === CORRECT) {
     gate.classList.add('fade-out');
     setTimeout(() => {
       gate.style.display = 'none';
-      webContainer.classList.add('visible');
-      initWeb();
+      board.classList.add('visible');
+      initBoard();
+      // Scroll to center
+      window.scrollTo(1800 - window.innerWidth/2, 1800 - window.innerHeight/2);
     }, 800);
   } else {
-    pwError.textContent = 'try again ♡';
+    document.getElementById('pw-error').textContent = 'try again ♡';
     pwInput.value = '';
     pwInput.focus();
-    setTimeout(() => pwError.textContent = '', 2000);
+    setTimeout(() => document.getElementById('pw-error').textContent = '', 2000);
   }
 }
-pwBtn.addEventListener('click', unlock);
+document.getElementById('pw-btn').addEventListener('click', unlock);
 pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
 
 // Day counter
 const start = new Date('2013-07-10');
 const today = new Date();
 const days = Math.floor((today - start) / (1000*60*60*24));
-document.getElementById('days-count').textContent = days.toLocaleString();
 
 // ── DATA ──
 const photos = [
@@ -400,25 +370,27 @@ const notes = [
   { text: "Okay I know we have things to do today but I really really don't want you to get up.", color: 'yellow', sig: '— Lilly 😅' },
 ];
 
-// ── WEB ENGINE ──
-let allNodes = [];
-let svg, panX = 0, panY = 0, scale = 1;
-let isDraggingNode = false, dragNode = null, dragOffX = 0, dragOffY = 0;
-let isPanning = false, panStartX = 0, panStartY = 0, panStartPanX = 0, panStartPanY = 0;
+// ── BUILD BOARD ──
+const CX = 1800, CY = 1800; // Center of 3600x3600 board
+let nodeData = []; // {x, y, el, id}
 
-function initWeb() {
-  svg = document.getElementById('web-canvas');
-  const W = window.innerWidth;
-  const H = window.innerHeight;
-  const cx = W / 2;
-  const cy = H / 2;
+function initBoard() {
+  const svg = document.getElementById('strings');
 
-  // Hub node (center)
-  allNodes.push({ type: 'hub', x: cx, y: cy, id: 'hub' });
+  // Hub
+  const hub = document.createElement('div');
+  hub.className = 'hub';
+  hub.style.left = (CX - 100) + 'px';
+  hub.style.top = (CY - 100) + 'px';
+  hub.innerHTML = `
+    <div class="hub-names">Brett <span>&amp;</span> Lilly</div>
+    <div class="hub-date">JULY 10, 2013</div>
+    <div class="hub-counter"><em>${days.toLocaleString()}</em> days</div>
+  `;
+  board.appendChild(hub);
+  nodeData.push({ x: CX, y: CY, el: hub, id: 'hub', w: 200, h: 200 });
 
-  // Place photos and notes in a spiral pattern around center
-  const totalItems = photos.length + notes.length;
-  // Interleave: photo, note, photo, note...
+  // Interleave photos and notes
   let items = [];
   let pi = 0, ni = 0;
   while (pi < photos.length || ni < notes.length) {
@@ -426,291 +398,188 @@ function initWeb() {
     if (ni < notes.length) items.push({ type: 'note', data: notes[ni++] });
   }
 
-  // Spiral layout
-  const baseRadius = 220;
-  const radiusStep = 55;
-  const angleStep = 0.65;
+  // Spiral placement — spread wide
+  const baseR = 300;
+  const spiralGrowth = 28;
+  const goldenAngle = 2.399963; // ~137.5°
+
   items.forEach((item, i) => {
-    const angle = i * angleStep + (Math.random() * 0.3 - 0.15);
-    const radius = baseRadius + i * radiusStep / (2 * Math.PI) * angleStep + (Math.random() * 40 - 20);
-    const x = cx + Math.cos(angle) * radius;
-    const y = cy + Math.sin(angle) * radius;
-    const rotation = (Math.random() * 8 - 4);
+    const angle = i * goldenAngle;
+    const r = baseR + Math.sqrt(i) * spiralGrowth * 4 + (Math.random() * 60 - 30);
+    const x = CX + Math.cos(angle) * r;
+    const y = CY + Math.sin(angle) * r;
+    const rot = (Math.random() * 10 - 5).toFixed(1);
+    const taped = Math.random() > 0.6;
+
+    const el = document.createElement('div');
 
     if (item.type === 'photo') {
-      allNodes.push({ type: 'photo', x, y, rotation, data: item.data, id: 'p' + i });
+      el.className = 'node photo' + (taped ? ' taped' : '');
+      el.style.transform = `rotate(${rot}deg)`;
+      el.innerHTML = `<img src="${item.data.src}" loading="lazy" draggable="false"/>${item.data.label ? `<div class="photo-label">${item.data.label}</div>` : ''}`;
+      // Lightbox on click
+      const img = el.querySelector('img');
+      img.addEventListener('click', () => {
+        if (!el._wasDragged) {
+          document.getElementById('lb-img').src = item.data.src;
+          document.getElementById('lightbox').classList.add('active');
+        }
+      });
+      el.style.left = (x - 90) + 'px';
+      el.style.top = (y - 100) + 'px';
+      nodeData.push({ x, y, el, id: 'p' + i, w: 180, h: 200 });
     } else {
-      allNodes.push({ type: 'note', x, y, rotation, data: item.data, id: 'n' + i });
+      el.className = `node note ${item.data.color}`;
+      el.style.transform = `rotate(${rot}deg)`;
+      el.innerHTML = `${item.data.text}<span class="sig">${item.data.sig}</span>`;
+      el.style.left = (x - 100) + 'px';
+      el.style.top = (y - 60) + 'px';
+      nodeData.push({ x, y, el, id: 'n' + i, w: 200, h: 140 });
     }
+
+    board.appendChild(el);
   });
 
-  // Create string connections (each node connects to hub and 1-2 neighbors)
-  createStrings();
-  createNodes();
-  updateView();
+  // Draw strings
+  drawStrings(svg);
 
-  // Pan & zoom
-  webContainer.addEventListener('mousedown', onMouseDown);
-  window.addEventListener('mousemove', onMouseMove);
-  window.addEventListener('mouseup', onMouseUp);
-  webContainer.addEventListener('wheel', onWheel, { passive: false });
-
-  // Touch
-  webContainer.addEventListener('touchstart', onTouchStart, { passive: false });
-  window.addEventListener('touchmove', onTouchMove, { passive: false });
-  window.addEventListener('touchend', onTouchEnd);
-
-  // Center the view
-  panX = 0;
-  panY = 0;
-  scale = Math.min(W / 2400, H / 2400, 0.85);
-  scale = Math.max(scale, 0.35);
-  updateView();
+  // Dragging
+  setupDrag();
 }
 
-function createStrings() {
-  // Each non-hub node gets a string to hub
-  const hub = allNodes[0];
-  const nonHub = allNodes.slice(1);
+function drawStrings(svg) {
+  svg.innerHTML = '';
+  const hub = nodeData[0];
+  const others = nodeData.slice(1);
 
-  nonHub.forEach((node, i) => {
-    // String to hub
-    addString(hub, node, 'hub-string');
-    // String to a neighbor
-    if (i > 0 && Math.random() > 0.3) {
-      addString(nonHub[i-1], node, 'neighbor-string');
+  others.forEach((node, i) => {
+    // String to hub — gold thread
+    addLine(svg, hub.x, hub.y, node.x, node.y, 'rgba(232,201,122,0.18)', 1.2);
+
+    // Neighbor string — red thread
+    if (i > 0 && Math.random() > 0.25) {
+      addLine(svg, others[i-1].x, others[i-1].y, node.x, node.y, 'rgba(196,102,90,0.2)', 0.8);
     }
-    // Occasional skip connection
-    if (i > 3 && Math.random() > 0.7) {
-      const target = nonHub[Math.floor(Math.random() * i)];
-      addString(target, node, 'skip-string');
+
+    // Skip connections
+    if (i > 4 && Math.random() > 0.7) {
+      const j = Math.floor(Math.random() * i);
+      addLine(svg, others[j].x, others[j].y, node.x, node.y, 'rgba(196,168,130,0.12)', 0.6, '6,6');
     }
   });
 }
 
-function addString(a, b, cls) {
+function addLine(svg, x1, y1, x2, y2, stroke, width, dash) {
   const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  line.setAttribute('class', cls);
-  line.dataset.from = a.id;
-  line.dataset.to = b.id;
-  line.setAttribute('stroke', cls === 'hub-string' ? 'rgba(232,201,122,0.12)' : 'rgba(196,102,90,0.15)');
-  line.setAttribute('stroke-width', cls === 'hub-string' ? '1' : '0.7');
-  line.setAttribute('stroke-dasharray', cls === 'skip-string' ? '4,4' : 'none');
+  line.setAttribute('x1', x1);
+  line.setAttribute('y1', y1);
+  line.setAttribute('x2', x2);
+  line.setAttribute('y2', y2);
+  line.setAttribute('stroke', stroke);
+  line.setAttribute('stroke-width', width);
+  if (dash) line.setAttribute('stroke-dasharray', dash);
   svg.appendChild(line);
 }
 
-function createNodes() {
-  allNodes.forEach(node => {
-    let el;
-    if (node.type === 'hub') {
-      el = document.createElement('div');
-      el.className = 'web-node hub';
-      el.innerHTML = `
-        <div class="hub-names">Brett <span>&amp;</span> Lilly</div>
-        <div class="hub-date">JULY 10, 2013</div>
-        <div class="hub-counter"><em>${days.toLocaleString()}</em> days</div>
-      `;
-    } else if (node.type === 'photo') {
-      el = document.createElement('div');
-      el.className = 'web-node photo';
-      el.style.transform = `rotate(${node.rotation}deg)`;
-      el.innerHTML = `<img src="${node.data.src}" loading="lazy" draggable="false"/>${node.data.label ? `<div class="photo-label">${node.data.label}</div>` : ''}`;
-      // Click to lightbox (only if not dragging)
-      el.addEventListener('click', (e) => {
-        if (!el._wasDragged) {
-          const lb = document.getElementById('lightbox');
-          document.getElementById('lb-img').src = node.data.src;
-          lb.classList.add('active');
-        }
-        el._wasDragged = false;
-      });
-    } else {
-      el = document.createElement('div');
-      el.className = `web-node note ${node.data.color}`;
-      el.style.transform = `rotate(${node.rotation}deg)`;
-      el.innerHTML = `${node.data.text}<span class="sig">${node.data.sig}</span>`;
-    }
+// ── DRAG NODES ──
+function setupDrag() {
+  let dragging = null, offX = 0, offY = 0, startX = 0, startY = 0, moved = false;
 
-    el.dataset.nodeId = node.id;
-    el.style.left = node.x + 'px';
-    el.style.top = node.y + 'px';
-    node.el = el;
-    webContainer.appendChild(el);
-  });
-}
+  function onStart(clientX, clientY, target) {
+    const nodeEl = target.closest('.node, .hub');
+    if (!nodeEl) return;
+    const nd = nodeData.find(n => n.el === nodeEl);
+    if (!nd) return;
 
-function updateView() {
-  const tx = panX;
-  const ty = panY;
+    dragging = nd;
+    moved = false;
+    startX = clientX;
+    startY = clientY;
+    const rect = nodeEl.getBoundingClientRect();
+    offX = clientX - rect.left + window.scrollX - parseFloat(nodeEl.style.left || 0);
+    offY = clientY - rect.top + window.scrollY - parseFloat(nodeEl.style.top || 0);
 
-  // Update node positions
-  allNodes.forEach(node => {
-    if (!node.el) return;
-    const sx = (node.x + tx) * scale;
-    const sy = (node.y + ty) * scale;
-    const w = node.type === 'hub' ? 80 : (node.type === 'photo' ? 70 : 85);
-    const h = node.type === 'hub' ? 80 : (node.type === 'photo' ? 80 : 50);
-    node.el.style.left = (sx - w) + 'px';
-    node.el.style.top = (sy - h) + 'px';
-    node.el.style.transform = `scale(${scale})${node.rotation ? ` rotate(${node.rotation}deg)` : ''}`;
-    node.el.style.transformOrigin = 'center center';
-  });
+    // Use absolute offset
+    offX = clientX + window.scrollX - nd.x;
+    offY = clientY + window.scrollY - nd.y;
 
-  // Update SVG lines
-  svg.querySelectorAll('line').forEach(line => {
-    const fromNode = allNodes.find(n => n.id === line.dataset.from);
-    const toNode = allNodes.find(n => n.id === line.dataset.to);
-    if (fromNode && toNode) {
-      line.setAttribute('x1', (fromNode.x + tx) * scale);
-      line.setAttribute('y1', (fromNode.y + ty) * scale);
-      line.setAttribute('x2', (toNode.x + tx) * scale);
-      line.setAttribute('y2', (toNode.y + ty) * scale);
-    }
-  });
-}
-
-// ── MOUSE EVENTS ──
-function getNodeFromEl(el) {
-  const nodeEl = el.closest('.web-node');
-  if (!nodeEl) return null;
-  return allNodes.find(n => n.id === nodeEl.dataset.nodeId);
-}
-
-function onMouseDown(e) {
-  const node = getNodeFromEl(e.target);
-  if (node) {
-    isDraggingNode = true;
-    dragNode = node;
-    dragNode.el._wasDragged = false;
-    const sx = (node.x + panX) * scale;
-    const sy = (node.y + panY) * scale;
-    dragOffX = e.clientX - sx;
-    dragOffY = e.clientY - sy;
-    document.body.classList.add('dragging-node');
-    e.preventDefault();
-  } else if (!e.target.closest('#lightbox') && !e.target.closest('#gate')) {
-    isPanning = true;
-    panStartX = e.clientX;
-    panStartY = e.clientY;
-    panStartPanX = panX;
-    panStartPanY = panY;
+    nodeEl.classList.add('dragging');
+    nodeEl._wasDragged = false;
   }
-}
 
-function onMouseMove(e) {
-  if (isDraggingNode && dragNode) {
-    const sx = e.clientX - dragOffX;
-    const sy = e.clientY - dragOffY;
-    dragNode.x = sx / scale - panX;
-    dragNode.y = sy / scale - panY;
-    dragNode.el._wasDragged = true;
-    updateView();
-  } else if (isPanning) {
-    panX = panStartPanX + (e.clientX - panStartX) / scale;
-    panY = panStartPanY + (e.clientY - panStartY) / scale;
-    updateView();
+  function onMove(clientX, clientY) {
+    if (!dragging) return;
+    const dx = clientX - startX;
+    const dy = clientY - startY;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+
+    const newX = clientX + window.scrollX - offX;
+    const newY = clientY + window.scrollY - offY;
+    dragging.x = newX;
+    dragging.y = newY;
+
+    const hw = dragging.w / 2;
+    const hh = dragging.h / 2;
+    dragging.el.style.left = (newX - hw) + 'px';
+    dragging.el.style.top = (newY - hh) + 'px';
+    dragging.el._wasDragged = moved;
+
+    // Redraw strings connected to this node
+    redrawStrings();
   }
-}
 
-function onMouseUp(e) {
-  isDraggingNode = false;
-  dragNode = null;
-  isPanning = false;
-  document.body.classList.remove('dragging-node');
-}
+  function onEnd() {
+    if (dragging) {
+      dragging.el.classList.remove('dragging');
+      dragging = null;
+    }
+  }
 
-function onWheel(e) {
-  e.preventDefault();
-  const delta = e.deltaY > 0 ? 0.92 : 1.08;
-  const newScale = Math.max(0.15, Math.min(3, scale * delta));
+  // Mouse
+  board.addEventListener('mousedown', e => {
+    if (e.target.closest('#lightbox')) return;
+    onStart(e.clientX, e.clientY, e.target);
+  });
+  window.addEventListener('mousemove', e => {
+    if (dragging) { e.preventDefault(); onMove(e.clientX, e.clientY); }
+  });
+  window.addEventListener('mouseup', onEnd);
 
-  // Zoom toward cursor
-  const mx = e.clientX;
-  const my = e.clientY;
-  const worldX = mx / scale - panX;
-  const worldY = my / scale - panY;
-
-  scale = newScale;
-  panX = mx / scale - worldX;
-  panY = my / scale - worldY;
-
-  updateView();
-}
-
-// ── TOUCH EVENTS ──
-let lastTouchDist = 0;
-function onTouchStart(e) {
-  if (e.touches.length === 1) {
-    const touch = e.touches[0];
-    const node = getNodeFromEl(touch.target);
-    if (node) {
-      isDraggingNode = true;
-      dragNode = node;
-      dragNode.el._wasDragged = false;
-      const sx = (node.x + panX) * scale;
-      const sy = (node.y + panY) * scale;
-      dragOffX = touch.clientX - sx;
-      dragOffY = touch.clientY - sy;
+  // Touch
+  board.addEventListener('touchstart', e => {
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    const nodeEl = t.target.closest('.node, .hub');
+    if (nodeEl) {
       e.preventDefault();
-    } else {
-      isPanning = true;
-      panStartX = touch.clientX;
-      panStartY = touch.clientY;
-      panStartPanX = panX;
-      panStartPanY = panY;
+      onStart(t.clientX, t.clientY, t.target);
     }
-  } else if (e.touches.length === 2) {
-    isPanning = false;
-    isDraggingNode = false;
-    const dx = e.touches[0].clientX - e.touches[1].clientX;
-    const dy = e.touches[0].clientY - e.touches[1].clientY;
-    lastTouchDist = Math.sqrt(dx*dx + dy*dy);
-  }
-}
-
-function onTouchMove(e) {
-  if (e.touches.length === 1) {
-    const touch = e.touches[0];
-    if (isDraggingNode && dragNode) {
-      const sx = touch.clientX - dragOffX;
-      const sy = touch.clientY - dragOffY;
-      dragNode.x = sx / scale - panX;
-      dragNode.y = sy / scale - panY;
-      dragNode.el._wasDragged = true;
-      updateView();
+  }, { passive: false });
+  window.addEventListener('touchmove', e => {
+    if (dragging && e.touches.length === 1) {
       e.preventDefault();
-    } else if (isPanning) {
-      panX = panStartPanX + (touch.clientX - panStartX) / scale;
-      panY = panStartPanY + (touch.clientY - panStartY) / scale;
-      updateView();
+      onMove(e.touches[0].clientX, e.touches[0].clientY);
     }
-  } else if (e.touches.length === 2) {
-    const dx = e.touches[0].clientX - e.touches[1].clientX;
-    const dy = e.touches[0].clientY - e.touches[1].clientY;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    if (lastTouchDist > 0) {
-      const delta = dist / lastTouchDist;
-      scale = Math.max(0.15, Math.min(3, scale * delta));
-      updateView();
-    }
-    lastTouchDist = dist;
-    e.preventDefault();
-  }
+  }, { passive: false });
+  window.addEventListener('touchend', onEnd);
 }
 
-function onTouchEnd(e) {
-  if (e.touches.length === 0) {
-    isDraggingNode = false;
-    dragNode = null;
-    isPanning = false;
-    lastTouchDist = 0;
-  }
+function redrawStrings() {
+  const svg = document.getElementById('strings');
+  // Simple: remove and recreate (fast enough for ~50 nodes)
+  // But for perf, let's just update existing lines
+  // Actually let's store connections and update
+  drawStrings(svg);
 }
 
 // Lightbox
-document.getElementById('lightbox-close').addEventListener('click', () => document.getElementById('lightbox').classList.remove('active'));
+document.getElementById('lightbox-close').addEventListener('click', () => {
+  document.getElementById('lightbox').classList.remove('active');
+});
 document.getElementById('lightbox').addEventListener('click', e => {
-  if (e.target === document.getElementById('lightbox')) document.getElementById('lightbox').classList.remove('active');
+  if (e.target === document.getElementById('lightbox')) {
+    document.getElementById('lightbox').classList.remove('active');
+  }
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('active');
