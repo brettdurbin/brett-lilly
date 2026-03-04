@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Brett & Lilly 💛</title>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Caveat+Brush&display=swap" rel="stylesheet">
   <style>
@@ -10,10 +10,14 @@
 
     body {
       font-family: 'Georgia', serif;
-      background: #0d0a0e;
+      background: #1a1410;
       color: #f5e6d3;
-      min-height: 100vh;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      cursor: grab;
     }
+    body.dragging-node { cursor: grabbing; }
 
     /* ── PASSWORD GATE ── */
     #gate {
@@ -78,209 +82,159 @@
     }
     #pw-btn:hover { background: #c4a882; color: #0d0a0e; }
 
-    /* ── MAIN SITE ── */
-    #main { display: none; }
-    #main.visible { display: block; }
-
-    .hero {
-      text-align: center;
-      padding: 80px 20px 60px;
-      background: linear-gradient(180deg, #1a0e1e 0%, #0d0a0e 100%);
-    }
-    .hero-names { font-size: clamp(2.5rem, 8vw, 5rem); letter-spacing: 0.1em; color: #f5e6d3; line-height: 1.1; }
-    .hero-ampersand { color: #e8c97a; font-style: italic; }
-    .hero-date { font-size: 1rem; letter-spacing: 0.4em; color: #c4a882; margin-top: 1.2rem; text-transform: uppercase; }
-    .hero-divider { width: 60px; height: 1px; background: #c4a882; margin: 1.5rem auto; }
-    .counter { font-size: 0.9rem; letter-spacing: 0.3em; color: #9a8070; }
-    .counter span { color: #e8c97a; font-size: 1.3rem; font-style: italic; }
-
-    .section-heading {
-      text-align: center;
-      font-size: 1.2rem;
-      letter-spacing: 0.4em;
-      color: #c4a882;
-      text-transform: uppercase;
-      padding: 50px 20px 30px;
-    }
-    .section-heading::after { content:''; display:block; width:40px; height:1px; background:#c4a882; margin:12px auto 0; }
-
-    /* Photo Grid */
-    .gallery {
-      columns: 3;
-      column-gap: 8px;
-      padding: 0 12px 12px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    @media (max-width: 768px) { .gallery { columns: 2; } }
-    @media (max-width: 480px) { .gallery { columns: 1; } }
-
-    .gallery-item {
-      break-inside: avoid;
-      margin-bottom: 8px;
-      position: relative;
+    /* ── CANVAS AREA ── */
+    #web-container {
+      display: none;
+      position: fixed;
+      inset: 0;
       overflow: hidden;
-      cursor: pointer;
     }
-    .gallery-item img {
-      width: 100%;
-      display: block;
-      transition: transform 0.4s ease, filter 0.4s ease;
-      filter: brightness(0.9) saturate(0.95);
-    }
-    .gallery-item:hover img { transform: scale(1.03); filter: brightness(1) saturate(1.1); }
+    #web-container.visible { display: block; }
 
-    /* ── POLAROID FRAMES ── */
-    .gallery-item.polaroid {
-      background: #fafaf5;
-      padding: 10px 10px 40px 10px;
-      box-shadow: 2px 4px 15px rgba(0,0,0,0.4);
+    #web-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
     }
-    .gallery-item.polaroid.tilt-left { transform: rotate(-2.5deg); }
-    .gallery-item.polaroid.tilt-right { transform: rotate(2deg); }
-    .gallery-item.polaroid.tilt-slight { transform: rotate(-1deg); }
-    .gallery-item.polaroid .polaroid-caption {
+
+    /* ── HEADER OVERLAY ── */
+    .web-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      text-align: center;
+      padding: 18px 20px 14px;
+      background: linear-gradient(180deg, rgba(13,10,14,0.9) 0%, transparent 100%);
+      z-index: 100;
+      pointer-events: none;
+    }
+    .web-header h1 {
+      font-size: 1.8rem;
+      letter-spacing: 0.12em;
+      color: #f5e6d3;
+      font-weight: normal;
+    }
+    .web-header h1 span { color: #e8c97a; font-style: italic; }
+    .web-header .sub {
+      font-size: 0.75rem;
+      letter-spacing: 0.35em;
+      color: #c4a882;
+      margin-top: 4px;
+    }
+
+    /* ── NODES ── */
+    .web-node {
+      position: absolute;
+      cursor: grab;
+      transition: box-shadow 0.3s ease, transform 0.15s ease;
+      z-index: 10;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .web-node:hover { z-index: 50; transform: scale(1.05); }
+    .web-node.active { cursor: grabbing; z-index: 100; transform: scale(1.08); }
+
+    /* Photo nodes */
+    .web-node.photo {
+      width: 140px;
+      background: #fafaf5;
+      padding: 8px 8px 32px 8px;
+      box-shadow: 3px 5px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(200,180,140,0.1);
+    }
+    .web-node.photo img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.95) saturate(0.9) sepia(0.08);
+    }
+    .web-node.photo .photo-label {
       font-family: 'Caveat', cursive;
-      font-size: 1rem;
+      font-size: 0.85rem;
       color: #4a3a30;
       text-align: center;
-      margin-top: 8px;
+      margin-top: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    /* ── TAPE STRIPS ── */
-    .gallery-item.taped { position: relative; }
-    .gallery-item.taped::before {
-      content: '';
-      position: absolute;
-      top: -6px;
-      left: 50%;
-      transform: translateX(-50%) rotate(-3deg);
-      width: 70px;
-      height: 22px;
-      background: rgba(255, 248, 220, 0.55);
-      border: 1px solid rgba(200, 180, 140, 0.3);
-      z-index: 2;
-      backdrop-filter: blur(1px);
-    }
-    .gallery-item.taped-corner::before {
-      content: '';
-      position: absolute;
-      top: -4px;
-      right: 10px;
-      transform: rotate(25deg);
-      width: 55px;
-      height: 20px;
-      background: rgba(255, 230, 200, 0.5);
-      border: 1px solid rgba(200, 170, 130, 0.25);
-      z-index: 2;
-    }
-    .gallery-item.taped-corner::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 12px;
-      transform: rotate(-15deg);
-      width: 55px;
-      height: 20px;
-      background: rgba(255, 230, 200, 0.5);
-      border: 1px solid rgba(200, 170, 130, 0.25);
-      z-index: 2;
-    }
-
-    /* ── PUSH PINS ── */
-    .note-card.pinned { position: relative; }
-    .note-card.pinned::after {
-      content: '📌';
-      position: absolute;
-      top: -8px;
-      right: 12px;
-      font-size: 1.2rem;
-      transform: rotate(15deg);
-      filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3));
-    }
-    .note-card.pinned-left::after {
-      content: '📌';
-      position: absolute;
-      top: -8px;
-      left: 14px;
-      right: auto;
-      font-size: 1.2rem;
-      transform: rotate(-20deg);
-      filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3));
-    }
-
-    /* ── WASHI TAPE ── */
-    .note-card.washi { position: relative; }
-    .note-card.washi::before {
-      content: '';
-      position: absolute;
-      top: -10px;
-      left: 20%;
-      width: 80px;
-      height: 18px;
-      background: repeating-linear-gradient(
-        45deg,
-        rgba(232, 201, 122, 0.5),
-        rgba(232, 201, 122, 0.5) 4px,
-        rgba(196, 168, 130, 0.4) 4px,
-        rgba(196, 168, 130, 0.4) 8px
-      );
-      transform: rotate(-2deg);
-      z-index: 2;
-    }
-    .note-card.washi-pink::before {
-      background: repeating-linear-gradient(
-        45deg,
-        rgba(253, 180, 180, 0.5),
-        rgba(253, 180, 180, 0.5) 4px,
-        rgba(240, 150, 160, 0.4) 4px,
-        rgba(240, 150, 160, 0.4) 8px
-      );
-    }
-    .note-card.washi-blue::before {
-      background: repeating-linear-gradient(
-        45deg,
-        rgba(180, 210, 240, 0.5),
-        rgba(180, 210, 240, 0.5) 4px,
-        rgba(150, 190, 230, 0.4) 4px,
-        rgba(150, 190, 230, 0.4) 8px
-      );
-    }
-
-    /* ── NOTE CARDS ── */
-    .note-card {
-      break-inside: avoid;
-      margin-bottom: 8px;
-      padding: 18px 20px 22px;
+    /* Note nodes */
+    .web-node.note {
+      width: 170px;
+      padding: 14px 16px 16px;
       font-family: 'Caveat', cursive;
-      font-size: 1.25rem;
-      line-height: 1.6;
-      position: relative;
-      border-radius: 2px;
-      box-shadow: 2px 4px 12px rgba(0,0,0,0.5);
+      font-size: 1rem;
+      line-height: 1.5;
+      box-shadow: 3px 5px 18px rgba(0,0,0,0.45);
     }
-    .note-card::before {
+    .web-node.note::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: repeating-linear-gradient(transparent, transparent 27px, rgba(180,140,100,0.18) 27px, rgba(180,140,100,0.18) 28px);
+      background: repeating-linear-gradient(transparent, transparent 24px, rgba(180,140,100,0.15) 24px, rgba(180,140,100,0.15) 25px);
+      pointer-events: none;
+      border-radius: inherit;
+    }
+    .web-node.note.cream  { background: #f5efdf; color: #2a1a0e; }
+    .web-node.note.yellow { background: #fff8c5; color: #2a1a0e; }
+    .web-node.note.pink   { background: #fde8e8; color: #2a1a0e; }
+    .web-node.note.white  { background: #fafafa; color: #1a1a1a; }
+    .web-node.note.torn   { background: #f0e8d5; color: #2a1a0e; clip-path: polygon(0 0,100% 2%,99% 98%,1% 100%); }
+    .web-node.note .sig {
+      display: block;
+      margin-top: 8px;
+      font-family: 'Caveat Brush', cursive;
+      font-size: 0.9rem;
+      opacity: 0.65;
+    }
+
+    /* Pin on top of node */
+    .web-node::after {
+      content: '📌';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%) rotate(15deg);
+      font-size: 1.1rem;
+      filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.4));
       pointer-events: none;
     }
-    .note-card.cream  { background: #f5efdf; color: #2a1a0e; transform: rotate(-1.5deg); }
-    .note-card.yellow { background: #fff8c5; color: #2a1a0e; transform: rotate(1deg); }
-    .note-card.pink   { background: #fde8e8; color: #2a1a0e; transform: rotate(-0.8deg); }
-    .note-card.white  { background: #fafafa; color: #1a1a1a; transform: rotate(1.5deg); }
-    .note-card.torn   { background: #f0e8d5; color: #2a1a0e; transform: rotate(-2deg);
-      clip-path: polygon(0 0,100% 2%,99% 98%,1% 100%); }
-    .note-card .note-sig {
-      display: block;
-      margin-top: 10px;
-      font-family: 'Caveat Brush', cursive;
-      font-size: 1.1rem;
-      color: inherit;
-      opacity: 0.7;
+
+    /* Center hub */
+    .web-node.hub {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, #2a1e2e, #0d0a0e);
+      border: 2px solid #e8c97a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(232,201,122,0.15), 3px 5px 20px rgba(0,0,0,0.6);
     }
-    .note-card .note-heart { color: #c0404a; }
+    .web-node.hub::after { display: none; }
+    .web-node.hub .hub-names {
+      font-size: 1.3rem;
+      letter-spacing: 0.08em;
+      color: #f5e6d3;
+    }
+    .web-node.hub .hub-names span { color: #e8c97a; font-style: italic; }
+    .web-node.hub .hub-date {
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      color: #c4a882;
+      margin-top: 4px;
+    }
+    .web-node.hub .hub-counter {
+      font-size: 0.7rem;
+      color: #9a8070;
+      margin-top: 6px;
+      letter-spacing: 0.15em;
+    }
+    .web-node.hub .hub-counter em { color: #e8c97a; font-style: normal; font-size: 0.9rem; }
 
     /* Lightbox */
     #lightbox {
@@ -295,12 +249,35 @@
     }
     #lightbox.active { display: flex; }
     #lightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; border: 1px solid #2a2020; }
-    #lightbox-close { position:absolute; top:20px; right:30px; font-size:2rem; color:#c4a882; cursor:pointer; background:none; border:none; line-height:1; }
-    #lb-prev, #lb-next { position:absolute; top:50%; transform:translateY(-50%); background:none; border:none; color:#c4a882; font-size:2.5rem; cursor:pointer; padding:10px 20px; }
-    #lb-prev { left:10px; } #lb-next { right:10px; }
+    #lightbox-close { position:absolute; top:20px; right:30px; font-size:2rem; color:#c4a882; cursor:pointer; background:none; border:none; line-height:1; z-index: 9000; }
 
-    .footer { text-align:center; padding:60px 20px 80px; color:#4a3a30; font-size:0.8rem; letter-spacing:0.2em; }
-    .footer-heart { color:#c4665a; font-size:1.2rem; }
+    /* Instructions */
+    .instructions {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: #5a4a3a;
+      z-index: 100;
+      pointer-events: none;
+      text-align: center;
+      opacity: 0.7;
+    }
+
+    /* Cork texture overlay */
+    #web-container::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(60,40,25,0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(60,40,25,0.2) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(40,25,15,0.15) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
   </style>
 </head>
 <body>
@@ -315,284 +292,429 @@
   <button id="pw-btn">ENTER</button>
 </div>
 
-<!-- MAIN CONTENT -->
-<div id="main">
+<!-- WEB CONTAINER -->
+<div id="web-container">
+  <svg id="web-canvas"></svg>
 
-  <div class="hero">
-    <div class="hero-names">Brett <span class="hero-ampersand">&amp;</span> Lilly</div>
-    <div class="hero-divider"></div>
-    <div class="hero-date">July 10, 2013</div>
-    <div class="hero-date" style="margin-top:0.5rem;font-size:0.85rem;">Together since day one</div>
-    <div class="hero-divider"></div>
-    <div class="counter"><span id="days-count">—</span> days &amp; counting</div>
+  <div class="web-header">
+    <h1>Brett <span>&amp;</span> Lilly</h1>
+    <div class="sub">SINCE JULY 10, 2013 · <span id="days-count">—</span> DAYS</div>
   </div>
 
-  <div class="section-heading">Our Story</div>
-
-  <div class="gallery" id="gallery">
-
-    <div class="gallery-item polaroid tilt-left"><img src="photos/01.jpg" loading="lazy"/><div class="polaroid-caption">us 💛</div></div>
-
-    <div class="note-card yellow pinned">
-      Brett,<br>I've been thinking about you all day and I can't concentrate on anything else. Come home soon.<br>
-      <span class="note-sig">— L <span class="note-heart">♥</span></span>
-    </div>
-
-    <div class="gallery-item taped"><img src="photos/02.jpg" loading="lazy"/></div>
-
-    <div class="gallery-item polaroid tilt-right"><img src="photos/03.jpg" loading="lazy"/></div>
-
-    <div class="note-card cream washi">
-      Last night was insane. I'm still not over it. You know exactly what you do to me and I love it.<br>
-      <span class="note-sig">— Lilly</span>
-    </div>
-
-    <div class="note-card pink pinned-left">
-      I want you right now. That's it. That's the note.<br>
-      <span class="note-sig">— L <span class="note-heart">❤️</span></span>
-    </div>
-
-    <div class="gallery-item taped-corner"><img src="photos/04.jpg" loading="lazy"/></div>
-
-    <div class="gallery-item polaroid tilt-slight"><img src="photos/note1.png" loading="lazy"/></div>
-
-    <div class="note-card white washi washi-blue">
-      Brett — you make me feel things I don't have words for. I'm obsessed with you in the best way possible.<br>
-      <span class="note-sig">— Lilly</span>
-    </div>
-
-    <div class="gallery-item taped"><img src="photos/05.jpg" loading="lazy"/></div>
-
-    <div class="note-card torn pinned">
-      I don't care what we do tonight as long as it ends the way I'm thinking. Don't keep me waiting.<br>
-      <span class="note-sig">— L</span>
-    </div>
-
-    <div class="gallery-item polaroid tilt-right"><img src="photos/06.jpg" loading="lazy"/></div>
-
-    <div class="note-card cream pinned-left">
-      Every single time. Every. Single. Time. I don't know how you do it but please never stop.<br>
-      <span class="note-sig">— Lilly <span class="note-heart">♥</span></span>
-    </div>
-
-    <div class="note-card yellow washi washi-pink">
-      I still get butterflies. After all this time. It's embarrassing honestly. I love you.<br>
-      <span class="note-sig">— Lilly <span class="note-heart">♥</span></span>
-    </div>
-
-    <div class="gallery-item taped-corner"><img src="photos/07.png" loading="lazy"/></div>
-
-    <div class="gallery-item polaroid tilt-left"><img src="photos/08.jpg" loading="lazy"/></div>
-
-    <div class="note-card pink pinned">
-      Come to bed. I'm waiting. Don't make me ask twice.<br>
-      <span class="note-sig">— L 😈</span>
-    </div>
-
-    <div class="gallery-item taped"><img src="photos/note2.png" loading="lazy"/></div>
-
-    <div class="note-card white washi">
-      I keep replaying last weekend in my head. You're dangerous and I'm here for all of it.<br>
-      <span class="note-sig">— Lilly</span>
-    </div>
-
-    <div class="gallery-item polaroid tilt-slight"><img src="photos/09.png" loading="lazy"/></div>
-
-    <div class="note-card torn washi washi-blue">
-      Nobody else gets to have you. Mine. All mine.<br>
-      <span class="note-sig">— L <span class="note-heart">♥</span></span>
-    </div>
-
-    <div class="note-card cream pinned">
-      You're the only person I want in my space, in my bed, in my life. Just you. Forever.<br>
-      <span class="note-sig">— L</span>
-    </div>
-
-    <div class="gallery-item taped-corner"><img src="photos/10.jpg" loading="lazy"/></div>
-
-    <div class="note-card yellow pinned-left">
-      I woke up thinking about you. Then I fell back asleep thinking about you. This is your fault.<br>
-      <span class="note-sig">— Lilly</span>
-    </div>
-
-    <div class="gallery-item polaroid tilt-right"><img src="photos/11.jpg" loading="lazy"/><div class="polaroid-caption">forever ♥</div></div>
-
-    <div class="gallery-item taped"><img src="photos/12.png" loading="lazy"/></div>
-
-    <div class="note-card pink washi washi-pink">
-      The way you look at me sometimes... you know what it does to me. Don't pretend you don't.<br>
-      <span class="note-sig">— L <span class="note-heart">❤️</span></span>
-    </div>
-
-    <div class="note-card white pinned">
-      Tonight I have plans for you. Very specific plans. You're going to like them.<br>
-      <span class="note-sig">— Lilly 😏</span>
-    </div>
-
-    <div class="gallery-item polaroid tilt-left"><img src="photos/13.jpg" loading="lazy"/></div>
-
-    <div class="note-card torn pinned-left">
-      I'm yours completely. Do with that what you want.<br>
-      <span class="note-sig">— L <span class="note-heart">♥</span></span>
-    </div>
-
-    <div class="gallery-item taped-corner"><img src="photos/note3.png" loading="lazy"/></div>
-
-    <div class="gallery-item polaroid tilt-slight"><img src="photos/14.jpg" loading="lazy"/><div class="polaroid-caption">my favorite</div></div>
-
-    <div class="note-card cream washi">
-      Brett. You ruin me. In the best way. I don't want to recover.<br>
-      <span class="note-sig">— Lilly</span>
-    </div>
-
-    <div class="note-card yellow pinned">
-      Okay I know we have things to do today but I really really don't want you to get up.<br>
-      <span class="note-sig">— Lilly 😅</span>
-    </div>
-
-    <div class="gallery-item taped"><img src="photos/15.jpg" loading="lazy"/></div>
-
-    <div class="note-card pink washi washi-blue">
-      I can't keep my hands off you and I'm not even sorry about it.<br>
-      <span class="note-sig">— L <span class="note-heart">❤️</span></span>
-    </div>
-
-    <div class="gallery-item polaroid tilt-right"><img src="photos/16.jpg" loading="lazy"/></div>
-
-    <div class="note-card white pinned-left">
-      Every time I think I've figured you out you do something that makes me fall all over again. Unfair.<br>
-      <span class="note-sig">— Lilly</span>
-    </div>
-
-    <div class="note-card torn washi washi-pink">
-      I think about the first time we... never mind. I'm smiling. You know why.<br>
-      <span class="note-sig">— L <span class="note-heart">♥</span></span>
-    </div>
-
-    <div class="gallery-item taped-corner"><img src="photos/17.jpg" loading="lazy"/></div>
-
-    <div class="note-card cream pinned">
-      You + me + absolutely nobody else around tonight. That's all I want. That's everything I want.<br>
-      <span class="note-sig">— L 🖤</span>
-    </div>
-
-    <div class="note-card yellow washi">
-      Being in love with you is my favorite thing I've ever done. Second favorite is everything else we do.<br>
-      <span class="note-sig">— Lilly 😘</span>
-    </div>
-
-    <div class="note-card pink pinned-left">
-      If you read this before coming home, hurry up.<br>
-      <span class="note-sig">— L <span class="note-heart">❤️</span></span>
-    </div>
-
-    <div class="note-card white washi washi-blue">
-      You hold me like I'm something worth holding onto. I never want to stop feeling that.<br>
-      <span class="note-sig">— Lilly</span>
-    </div>
-
-    <div class="note-card torn pinned">
-      I wrote you like four other versions of this note and deleted them all. This is the tame one. Ask me later.<br>
-      <span class="note-sig">— L 🙈</span>
-    </div>
-
-    <div class="note-card cream washi washi-pink">
-      I love you so much it makes me want to do things I can't write down. So I'll just show you instead.<br>
-      <span class="note-sig">— Lilly <span class="note-heart">♥</span></span>
-    </div>
-
-    <div class="note-card yellow pinned-left">
-      You have absolutely no idea what you look like when you sleep. I do. It's my favorite view.<br>
-      <span class="note-sig">— L</span>
-    </div>
-
-    <div class="note-card pink washi">
-      The chemistry we have should be illegal. Just saying. I'm not complaining. Not even a little.<br>
-      <span class="note-sig">— Lilly 🔥</span>
-    </div>
-
-    <div class="note-card white pinned">
-      Brett Durbin, you are genuinely the sexiest most annoying person I've ever met and I'd choose you every single time.<br>
-      <span class="note-sig">— L <span class="note-heart">♥</span></span>
-    </div>
-
-    <div class="note-card torn washi washi-blue">
-      I'm yours. You know that. Now act like it tonight.<br>
-      <span class="note-sig">— Lilly 😈</span>
-    </div>
-
-    <div class="note-card cream pinned-left">
-      Loving you is the easiest and the hardest thing all at once. I wouldn't trade it for anything.<br>
-      <span class="note-sig">— L <span class="note-heart">❤️</span></span>
-    </div>
-
-  </div>
-
-  <div class="footer">
-    <div class="footer-heart">♥</div>
-    <div style="margin-top:12px">made with love · for lilly · always</div>
-  </div>
-
+  <div class="instructions">drag to move · click photos to enlarge · scroll to zoom</div>
 </div>
 
 <!-- LIGHTBOX -->
 <div id="lightbox">
   <button id="lightbox-close">✕</button>
-  <button id="lb-prev">‹</button>
   <img id="lb-img" src="" />
-  <button id="lb-next">›</button>
 </div>
 
 <script>
-  const CORRECT = 'lilly25';
-  const input = document.getElementById('pw-input');
-  const btn = document.getElementById('pw-btn');
-  const error = document.getElementById('pw-error');
-  const gate = document.getElementById('gate');
-  const main = document.getElementById('main');
+// ── PASSWORD GATE ──
+const CORRECT = 'lilly25';
+const pwInput = document.getElementById('pw-input');
+const pwBtn = document.getElementById('pw-btn');
+const pwError = document.getElementById('pw-error');
+const gate = document.getElementById('gate');
+const webContainer = document.getElementById('web-container');
 
-  function unlock() {
-    if (input.value.trim().toLowerCase() === CORRECT) {
-      gate.classList.add('fade-out');
-      setTimeout(() => { gate.style.display = 'none'; main.classList.add('visible'); }, 800);
+function unlock() {
+  if (pwInput.value.trim().toLowerCase() === CORRECT) {
+    gate.classList.add('fade-out');
+    setTimeout(() => {
+      gate.style.display = 'none';
+      webContainer.classList.add('visible');
+      initWeb();
+    }, 800);
+  } else {
+    pwError.textContent = 'try again ♡';
+    pwInput.value = '';
+    pwInput.focus();
+    setTimeout(() => pwError.textContent = '', 2000);
+  }
+}
+pwBtn.addEventListener('click', unlock);
+pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+
+// Day counter
+const start = new Date('2013-07-10');
+const today = new Date();
+const days = Math.floor((today - start) / (1000*60*60*24));
+document.getElementById('days-count').textContent = days.toLocaleString();
+
+// ── DATA ──
+const photos = [
+  { src: 'photos/01.jpg', label: 'us 💛' },
+  { src: 'photos/02.jpg', label: '' },
+  { src: 'photos/03.jpg', label: '' },
+  { src: 'photos/04.jpg', label: '' },
+  { src: 'photos/05.jpg', label: '' },
+  { src: 'photos/06.jpg', label: '' },
+  { src: 'photos/07.png', label: '' },
+  { src: 'photos/08.jpg', label: '' },
+  { src: 'photos/09.png', label: '' },
+  { src: 'photos/10.jpg', label: '' },
+  { src: 'photos/11.jpg', label: 'forever ♥' },
+  { src: 'photos/12.png', label: '' },
+  { src: 'photos/13.jpg', label: '' },
+  { src: 'photos/14.jpg', label: 'my favorite' },
+  { src: 'photos/15.jpg', label: '' },
+  { src: 'photos/16.jpg', label: '' },
+  { src: 'photos/17.jpg', label: '' },
+  { src: 'photos/note1.png', label: '' },
+  { src: 'photos/note2.png', label: '' },
+  { src: 'photos/note3.png', label: '' },
+];
+
+const notes = [
+  { text: "I've been thinking about you all day and I can't concentrate on anything else. Come home soon.", color: 'yellow', sig: '— L ♥' },
+  { text: "Last night was insane. I'm still not over it. You know exactly what you do to me.", color: 'cream', sig: '— Lilly' },
+  { text: "I want you right now. That's it. That's the note.", color: 'pink', sig: '— L ❤️' },
+  { text: "You make me feel things I don't have words for. I'm obsessed with you in the best way.", color: 'white', sig: '— Lilly' },
+  { text: "I don't care what we do tonight as long as it ends the way I'm thinking.", color: 'torn', sig: '— L' },
+  { text: "Every single time. I don't know how you do it but please never stop.", color: 'cream', sig: '— Lilly ♥' },
+  { text: "I still get butterflies. After all this time. It's embarrassing honestly. I love you.", color: 'yellow', sig: '— Lilly ♥' },
+  { text: "Come to bed. I'm waiting. Don't make me ask twice.", color: 'pink', sig: '— L 😈' },
+  { text: "Nobody else gets to have you. Mine. All mine.", color: 'torn', sig: '— L ♥' },
+  { text: "You're the only person I want in my space, in my bed, in my life. Just you. Forever.", color: 'cream', sig: '— L' },
+  { text: "I woke up thinking about you. Then I fell back asleep thinking about you. This is your fault.", color: 'yellow', sig: '— Lilly' },
+  { text: "The way you look at me sometimes... you know what it does to me.", color: 'pink', sig: '— L ❤️' },
+  { text: "Tonight I have plans for you. Very specific plans. You're going to like them.", color: 'white', sig: '— Lilly 😏' },
+  { text: "I'm yours completely. Do with that what you want.", color: 'torn', sig: '— L ♥' },
+  { text: "Brett. You ruin me. In the best way. I don't want to recover.", color: 'cream', sig: '— Lilly' },
+  { text: "I can't keep my hands off you and I'm not even sorry about it.", color: 'pink', sig: '— L ❤️' },
+  { text: "Every time I think I've figured you out you do something that makes me fall all over again.", color: 'white', sig: '— Lilly' },
+  { text: "I think about the first time we... never mind. I'm smiling. You know why.", color: 'torn', sig: '— L ♥' },
+  { text: "You + me + absolutely nobody else around tonight. That's everything I want.", color: 'cream', sig: '— L 🖤' },
+  { text: "Being in love with you is my favorite thing I've ever done.", color: 'yellow', sig: '— Lilly 😘' },
+  { text: "If you read this before coming home, hurry up.", color: 'pink', sig: '— L ❤️' },
+  { text: "You hold me like I'm something worth holding onto. I never want to stop feeling that.", color: 'white', sig: '— Lilly' },
+  { text: "I love you so much it makes me want to do things I can't write down.", color: 'cream', sig: '— Lilly ♥' },
+  { text: "You have absolutely no idea what you look like when you sleep. I do. It's my favorite view.", color: 'yellow', sig: '— L' },
+  { text: "The chemistry we have should be illegal. Not complaining. Not even a little.", color: 'pink', sig: '— Lilly 🔥' },
+  { text: "Brett Durbin, you are the sexiest most annoying person I've ever met and I'd choose you every single time.", color: 'white', sig: '— L ♥' },
+  { text: "I'm yours. You know that. Now act like it tonight.", color: 'torn', sig: '— Lilly 😈' },
+  { text: "Loving you is the easiest and the hardest thing all at once. I wouldn't trade it for anything.", color: 'cream', sig: '— L ❤️' },
+  { text: "I wrote you like four other versions of this note and deleted them all. This is the tame one.", color: 'torn', sig: '— L 🙈' },
+  { text: "Okay I know we have things to do today but I really really don't want you to get up.", color: 'yellow', sig: '— Lilly 😅' },
+];
+
+// ── WEB ENGINE ──
+let allNodes = [];
+let svg, panX = 0, panY = 0, scale = 1;
+let isDraggingNode = false, dragNode = null, dragOffX = 0, dragOffY = 0;
+let isPanning = false, panStartX = 0, panStartY = 0, panStartPanX = 0, panStartPanY = 0;
+
+function initWeb() {
+  svg = document.getElementById('web-canvas');
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  const cx = W / 2;
+  const cy = H / 2;
+
+  // Hub node (center)
+  allNodes.push({ type: 'hub', x: cx, y: cy, id: 'hub' });
+
+  // Place photos and notes in a spiral pattern around center
+  const totalItems = photos.length + notes.length;
+  // Interleave: photo, note, photo, note...
+  let items = [];
+  let pi = 0, ni = 0;
+  while (pi < photos.length || ni < notes.length) {
+    if (pi < photos.length) items.push({ type: 'photo', data: photos[pi++] });
+    if (ni < notes.length) items.push({ type: 'note', data: notes[ni++] });
+  }
+
+  // Spiral layout
+  const baseRadius = 220;
+  const radiusStep = 55;
+  const angleStep = 0.65;
+  items.forEach((item, i) => {
+    const angle = i * angleStep + (Math.random() * 0.3 - 0.15);
+    const radius = baseRadius + i * radiusStep / (2 * Math.PI) * angleStep + (Math.random() * 40 - 20);
+    const x = cx + Math.cos(angle) * radius;
+    const y = cy + Math.sin(angle) * radius;
+    const rotation = (Math.random() * 8 - 4);
+
+    if (item.type === 'photo') {
+      allNodes.push({ type: 'photo', x, y, rotation, data: item.data, id: 'p' + i });
     } else {
-      error.textContent = 'try again ♡';
-      input.value = '';
-      input.focus();
-      setTimeout(() => error.textContent = '', 2000);
+      allNodes.push({ type: 'note', x, y, rotation, data: item.data, id: 'n' + i });
     }
-  }
-
-  btn.addEventListener('click', unlock);
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
-
-  const start = new Date('2013-07-10');
-  const today = new Date();
-  const days = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-  document.getElementById('days-count').textContent = days.toLocaleString();
-
-  const imgs = Array.from(document.querySelectorAll('.gallery-item img'));
-  const lb = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lb-img');
-  let current = 0;
-
-  function showLB(idx) {
-    current = idx;
-    lbImg.src = imgs[idx].src;
-    lb.classList.add('active');
-  }
-
-  imgs.forEach((img, i) => img.parentElement.addEventListener('click', () => showLB(i)));
-  document.getElementById('lightbox-close').addEventListener('click', () => lb.classList.remove('active'));
-  document.getElementById('lb-prev').addEventListener('click', () => showLB((current - 1 + imgs.length) % imgs.length));
-  document.getElementById('lb-next').addEventListener('click', () => showLB((current + 1) % imgs.length));
-  lb.addEventListener('click', e => { if (e.target === lb) lb.classList.remove('active'); });
-  document.addEventListener('keydown', e => {
-    if (!lb.classList.contains('active')) return;
-    if (e.key === 'ArrowLeft') showLB((current - 1 + imgs.length) % imgs.length);
-    if (e.key === 'ArrowRight') showLB((current + 1) % imgs.length);
-    if (e.key === 'Escape') lb.classList.remove('active');
   });
+
+  // Create string connections (each node connects to hub and 1-2 neighbors)
+  createStrings();
+  createNodes();
+  updateView();
+
+  // Pan & zoom
+  webContainer.addEventListener('mousedown', onMouseDown);
+  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('mouseup', onMouseUp);
+  webContainer.addEventListener('wheel', onWheel, { passive: false });
+
+  // Touch
+  webContainer.addEventListener('touchstart', onTouchStart, { passive: false });
+  window.addEventListener('touchmove', onTouchMove, { passive: false });
+  window.addEventListener('touchend', onTouchEnd);
+
+  // Center the view
+  panX = 0;
+  panY = 0;
+  scale = Math.min(W / 2400, H / 2400, 0.85);
+  scale = Math.max(scale, 0.35);
+  updateView();
+}
+
+function createStrings() {
+  // Each non-hub node gets a string to hub
+  const hub = allNodes[0];
+  const nonHub = allNodes.slice(1);
+
+  nonHub.forEach((node, i) => {
+    // String to hub
+    addString(hub, node, 'hub-string');
+    // String to a neighbor
+    if (i > 0 && Math.random() > 0.3) {
+      addString(nonHub[i-1], node, 'neighbor-string');
+    }
+    // Occasional skip connection
+    if (i > 3 && Math.random() > 0.7) {
+      const target = nonHub[Math.floor(Math.random() * i)];
+      addString(target, node, 'skip-string');
+    }
+  });
+}
+
+function addString(a, b, cls) {
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('class', cls);
+  line.dataset.from = a.id;
+  line.dataset.to = b.id;
+  line.setAttribute('stroke', cls === 'hub-string' ? 'rgba(232,201,122,0.12)' : 'rgba(196,102,90,0.15)');
+  line.setAttribute('stroke-width', cls === 'hub-string' ? '1' : '0.7');
+  line.setAttribute('stroke-dasharray', cls === 'skip-string' ? '4,4' : 'none');
+  svg.appendChild(line);
+}
+
+function createNodes() {
+  allNodes.forEach(node => {
+    let el;
+    if (node.type === 'hub') {
+      el = document.createElement('div');
+      el.className = 'web-node hub';
+      el.innerHTML = `
+        <div class="hub-names">Brett <span>&amp;</span> Lilly</div>
+        <div class="hub-date">JULY 10, 2013</div>
+        <div class="hub-counter"><em>${days.toLocaleString()}</em> days</div>
+      `;
+    } else if (node.type === 'photo') {
+      el = document.createElement('div');
+      el.className = 'web-node photo';
+      el.style.transform = `rotate(${node.rotation}deg)`;
+      el.innerHTML = `<img src="${node.data.src}" loading="lazy" draggable="false"/>${node.data.label ? `<div class="photo-label">${node.data.label}</div>` : ''}`;
+      // Click to lightbox (only if not dragging)
+      el.addEventListener('click', (e) => {
+        if (!el._wasDragged) {
+          const lb = document.getElementById('lightbox');
+          document.getElementById('lb-img').src = node.data.src;
+          lb.classList.add('active');
+        }
+        el._wasDragged = false;
+      });
+    } else {
+      el = document.createElement('div');
+      el.className = `web-node note ${node.data.color}`;
+      el.style.transform = `rotate(${node.rotation}deg)`;
+      el.innerHTML = `${node.data.text}<span class="sig">${node.data.sig}</span>`;
+    }
+
+    el.dataset.nodeId = node.id;
+    el.style.left = node.x + 'px';
+    el.style.top = node.y + 'px';
+    node.el = el;
+    webContainer.appendChild(el);
+  });
+}
+
+function updateView() {
+  const tx = panX;
+  const ty = panY;
+
+  // Update node positions
+  allNodes.forEach(node => {
+    if (!node.el) return;
+    const sx = (node.x + tx) * scale;
+    const sy = (node.y + ty) * scale;
+    const w = node.type === 'hub' ? 80 : (node.type === 'photo' ? 70 : 85);
+    const h = node.type === 'hub' ? 80 : (node.type === 'photo' ? 80 : 50);
+    node.el.style.left = (sx - w) + 'px';
+    node.el.style.top = (sy - h) + 'px';
+    node.el.style.transform = `scale(${scale})${node.rotation ? ` rotate(${node.rotation}deg)` : ''}`;
+    node.el.style.transformOrigin = 'center center';
+  });
+
+  // Update SVG lines
+  svg.querySelectorAll('line').forEach(line => {
+    const fromNode = allNodes.find(n => n.id === line.dataset.from);
+    const toNode = allNodes.find(n => n.id === line.dataset.to);
+    if (fromNode && toNode) {
+      line.setAttribute('x1', (fromNode.x + tx) * scale);
+      line.setAttribute('y1', (fromNode.y + ty) * scale);
+      line.setAttribute('x2', (toNode.x + tx) * scale);
+      line.setAttribute('y2', (toNode.y + ty) * scale);
+    }
+  });
+}
+
+// ── MOUSE EVENTS ──
+function getNodeFromEl(el) {
+  const nodeEl = el.closest('.web-node');
+  if (!nodeEl) return null;
+  return allNodes.find(n => n.id === nodeEl.dataset.nodeId);
+}
+
+function onMouseDown(e) {
+  const node = getNodeFromEl(e.target);
+  if (node) {
+    isDraggingNode = true;
+    dragNode = node;
+    dragNode.el._wasDragged = false;
+    const sx = (node.x + panX) * scale;
+    const sy = (node.y + panY) * scale;
+    dragOffX = e.clientX - sx;
+    dragOffY = e.clientY - sy;
+    document.body.classList.add('dragging-node');
+    e.preventDefault();
+  } else if (!e.target.closest('#lightbox') && !e.target.closest('#gate')) {
+    isPanning = true;
+    panStartX = e.clientX;
+    panStartY = e.clientY;
+    panStartPanX = panX;
+    panStartPanY = panY;
+  }
+}
+
+function onMouseMove(e) {
+  if (isDraggingNode && dragNode) {
+    const sx = e.clientX - dragOffX;
+    const sy = e.clientY - dragOffY;
+    dragNode.x = sx / scale - panX;
+    dragNode.y = sy / scale - panY;
+    dragNode.el._wasDragged = true;
+    updateView();
+  } else if (isPanning) {
+    panX = panStartPanX + (e.clientX - panStartX) / scale;
+    panY = panStartPanY + (e.clientY - panStartY) / scale;
+    updateView();
+  }
+}
+
+function onMouseUp(e) {
+  isDraggingNode = false;
+  dragNode = null;
+  isPanning = false;
+  document.body.classList.remove('dragging-node');
+}
+
+function onWheel(e) {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 0.92 : 1.08;
+  const newScale = Math.max(0.15, Math.min(3, scale * delta));
+
+  // Zoom toward cursor
+  const mx = e.clientX;
+  const my = e.clientY;
+  const worldX = mx / scale - panX;
+  const worldY = my / scale - panY;
+
+  scale = newScale;
+  panX = mx / scale - worldX;
+  panY = my / scale - worldY;
+
+  updateView();
+}
+
+// ── TOUCH EVENTS ──
+let lastTouchDist = 0;
+function onTouchStart(e) {
+  if (e.touches.length === 1) {
+    const touch = e.touches[0];
+    const node = getNodeFromEl(touch.target);
+    if (node) {
+      isDraggingNode = true;
+      dragNode = node;
+      dragNode.el._wasDragged = false;
+      const sx = (node.x + panX) * scale;
+      const sy = (node.y + panY) * scale;
+      dragOffX = touch.clientX - sx;
+      dragOffY = touch.clientY - sy;
+      e.preventDefault();
+    } else {
+      isPanning = true;
+      panStartX = touch.clientX;
+      panStartY = touch.clientY;
+      panStartPanX = panX;
+      panStartPanY = panY;
+    }
+  } else if (e.touches.length === 2) {
+    isPanning = false;
+    isDraggingNode = false;
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    lastTouchDist = Math.sqrt(dx*dx + dy*dy);
+  }
+}
+
+function onTouchMove(e) {
+  if (e.touches.length === 1) {
+    const touch = e.touches[0];
+    if (isDraggingNode && dragNode) {
+      const sx = touch.clientX - dragOffX;
+      const sy = touch.clientY - dragOffY;
+      dragNode.x = sx / scale - panX;
+      dragNode.y = sy / scale - panY;
+      dragNode.el._wasDragged = true;
+      updateView();
+      e.preventDefault();
+    } else if (isPanning) {
+      panX = panStartPanX + (touch.clientX - panStartX) / scale;
+      panY = panStartPanY + (touch.clientY - panStartY) / scale;
+      updateView();
+    }
+  } else if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (lastTouchDist > 0) {
+      const delta = dist / lastTouchDist;
+      scale = Math.max(0.15, Math.min(3, scale * delta));
+      updateView();
+    }
+    lastTouchDist = dist;
+    e.preventDefault();
+  }
+}
+
+function onTouchEnd(e) {
+  if (e.touches.length === 0) {
+    isDraggingNode = false;
+    dragNode = null;
+    isPanning = false;
+    lastTouchDist = 0;
+  }
+}
+
+// Lightbox
+document.getElementById('lightbox-close').addEventListener('click', () => document.getElementById('lightbox').classList.remove('active'));
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === document.getElementById('lightbox')) document.getElementById('lightbox').classList.remove('active');
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('active');
+});
 </script>
 </body>
 </html>
