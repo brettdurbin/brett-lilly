@@ -242,6 +242,85 @@
     }
     .node.taped::after { display: none; }
 
+    /* Coupon / Gift Card nodes */
+    .node.coupon {
+      width: 260px;
+      background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 50%, #ffe699 100%);
+      padding: 0;
+      box-shadow: 4px 6px 22px rgba(0,0,0,0.5), inset 0 0 0 2px rgba(180,140,60,0.3);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .node.coupon::after {
+      content: '📌';
+      position: absolute;
+      top: -12px;
+      right: 16px;
+      left: auto;
+      transform: rotate(-10deg);
+      font-size: 1.3rem;
+    }
+    .coupon-border {
+      border: 2px dashed #c4a040;
+      margin: 6px;
+      padding: 14px 16px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .coupon-title {
+      font-family: 'Georgia', serif;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #6b4c00;
+      letter-spacing: 0.15em;
+      margin-bottom: 2px;
+    }
+    .coupon-subtitle {
+      font-family: 'Caveat', cursive;
+      font-size: 0.85rem;
+      color: #8a6d20;
+      margin-bottom: 8px;
+    }
+    .coupon-value {
+      font-family: 'Georgia', serif;
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #4a3500;
+      margin: 6px 0;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+    }
+    .coupon-desc {
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: #3a2a00;
+      line-height: 1.4;
+      margin: 8px 0;
+    }
+    .coupon-divider {
+      font-size: 0.7rem;
+      color: #c4a040;
+      letter-spacing: 0.05em;
+      margin: 8px 0 6px;
+    }
+    .coupon-fine {
+      font-family: 'Georgia', serif;
+      font-size: 0.6rem;
+      color: #7a6030;
+      line-height: 1.4;
+      font-style: italic;
+      margin-bottom: 6px;
+    }
+    .coupon-code {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: #4a3500;
+      background: rgba(0,0,0,0.06);
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 3px;
+      letter-spacing: 0.15em;
+    }
+
     /* Lightbox */
     #lightbox {
       display: none;
@@ -370,6 +449,34 @@ const notes = [
   { text: "Okay I know we have things to do today but I really really don't want you to get up.", color: 'yellow', sig: '— Lilly 😅' },
 ];
 
+// Fake coupon / gift card
+const coupons = [
+  {
+    title: '🎁 GIFT CERTIFICATE',
+    subtitle: 'Redeemable by Lilly ONLY',
+    value: 'ONE (1) FREE',
+    desc: 'Full Day of Brett Doing Whatever You Say\nNo Questions Asked · No Complaints · No Phone',
+    fine: 'Valid any day Lilly chooses. Non-transferable. Brett cannot dispute. Expires: NEVER.',
+    code: 'LILLY-IS-BOSS-2025'
+  },
+  {
+    title: '💆‍♀️ SPA COUPON',
+    subtitle: 'Issued by: Brett Durbin Wellness Corp™',
+    value: 'UNLIMITED',
+    desc: 'Back Rubs, Foot Rubs & Head Scratches\nOn Demand · Any Time · No Excuses',
+    fine: 'Coupon activated by simply saying "babe." Brett must comply within 30 seconds or penalty doubles.',
+    code: 'RUB-4-LILLY-VIP'
+  },
+  {
+    title: '🍕 GOLDEN TICKET',
+    subtitle: 'Brett\'s Kitchen™ — VIP Pass',
+    value: '$500 VALUE',
+    desc: 'Dinner of Your Choice\nCooked by Brett · Served in Bed · Dessert Included 😏',
+    fine: 'If food is mid, Brett must order DoorDash AND still do dishes. No appeals.',
+    code: 'CHEF-BRETT-FRAUD'
+  }
+];
+
 // ── BUILD BOARD ──
 const CX = 1800, CY = 1800; // Center of 3600x3600 board
 let nodeData = []; // {x, y, el, id}
@@ -438,6 +545,34 @@ function initBoard() {
     }
 
     board.appendChild(el);
+  });
+
+  // Add fake coupons scattered around
+  coupons.forEach((coupon, i) => {
+    const angle = (i / coupons.length) * Math.PI * 2 + 0.8;
+    const r = 500 + Math.random() * 300;
+    const x = CX + Math.cos(angle) * r;
+    const y = CY + Math.sin(angle) * r;
+    const rot = (Math.random() * 6 - 3).toFixed(1);
+
+    const el = document.createElement('div');
+    el.className = 'node coupon';
+    el.style.transform = `rotate(${rot}deg)`;
+    el.innerHTML = `
+      <div class="coupon-border">
+        <div class="coupon-title">${coupon.title}</div>
+        <div class="coupon-subtitle">${coupon.subtitle}</div>
+        <div class="coupon-value">${coupon.value}</div>
+        <div class="coupon-desc">${coupon.desc.replace(/\n/g, '<br>')}</div>
+        <div class="coupon-divider">✂ · · · · · · · · · · · · · · · · · · · · ✂</div>
+        <div class="coupon-fine">${coupon.fine}</div>
+        <div class="coupon-code">${coupon.code}</div>
+      </div>
+    `;
+    el.style.left = (x - 120) + 'px';
+    el.style.top = (y - 90) + 'px';
+    board.appendChild(el);
+    nodeData.push({ x, y, el, id: 'c' + i, w: 240, h: 180 });
   });
 
   // Draw strings
